@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='get-unipa',
-    version=open("get-unipa.version").read(),
+    version=open("get-unipa.version").read().strip(),
     packages=setuptools.find_packages(),
     install_requires=["beautifulsoup4", "requests", "html5lib"],
     url='https://github.com/book000/get-unipa',
