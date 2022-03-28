@@ -1,4 +1,4 @@
-name: Pre Release
+name: Release
 
 on:
   workflow_dispatch:
@@ -53,11 +53,6 @@ jobs:
       - name: Sed Version
         run: |
           echo ${{ steps.tag_version.outputs.new_version }}> get-unipa.version
-
-      - name: Set PROJECT_NAME
-        id: vars
-        run: |
-          echo "::set-output name=PROJECT_NAME::`TOP=$(git rev-parse --show-toplevel); echo ${TOP##*/}`"
 
       - name: Publish release
         uses: actions/create-release@v1
