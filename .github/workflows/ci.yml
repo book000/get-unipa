@@ -56,5 +56,5 @@ jobs:
 
     - name: Check with mypy
       run: |
-        yes | mypy manaba --install-types || true
-        mypy manaba
+        yes | mypy unipa --install-types || true
+        mypy unipa
