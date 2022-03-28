@@ -20,6 +20,11 @@ jobs:
         ruby-version: '3.1'
         bundler-cache: true
 
+    - name: Test merge
+      run: |
+        git switch master
+        git merge origin/develop
+
     - name: Bump version and push tag
       id: tag_version
       uses: mathieudutour/github-tag-action@v6.0
