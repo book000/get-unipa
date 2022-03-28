@@ -51,8 +51,11 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Sed Version
+        id: sed-version
         run: |
           echo ${{ steps.tag_version.outputs.new_version }}> get-unipa.version
+          sed -i 's/-develop./.dev/g' get-unipa.version
+          echo "::set-output name=new_version::`cat get-unipa.version`"
 
       - name: Publish release
         uses: actions/create-release@v1
@@ -60,9 +63,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          release_name: ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}https://${{ (github.ref != 'refs/heads/master' && 'test.') || '' }}pypi.org/project/get-unipa/${{ steps.tag_version.outputs.new_version }}/
+          tag_name: ${{ steps.sed-version.outputs.new_tag }}
+          release_name: ${{ steps.sed-version.outputs.new_tag }}
+          body: ${{ steps.sed-version.outputs.changelog }}https://${{ (github.ref != 'refs/heads/master' && 'test.') || '' }}pypi.org/project/get-unipa/${{ steps.sed-version.outputs.new_version }}/
           prerelease: ${{ (github.ref != 'refs/heads/master' && 'true') || 'false' }}
 
       - name: Upload Release Asset
