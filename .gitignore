@@ -1,0 +1,10 @@
+venv
+.idea
+config.json
+tests.json
+*.pyc
+test.py
+get_unipa.egg-info
+docs/
+build/
+dist/
