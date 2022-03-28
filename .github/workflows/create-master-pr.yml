@@ -25,7 +25,7 @@ jobs:
         git switch master
         git merge origin/develop
 
-    - name: Bump version and push tag
+    - name: Bump version
       id: tag_version
       uses: mathieudutour/github-tag-action@v6.0
       with:
