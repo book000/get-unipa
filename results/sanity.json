@@ -16,12 +16,12 @@
       "language": "Python",
       "line": 1,
       "offset": 0,
-      "length": 740,
+      "length": 748,
       "code": {
         "startLine": 1,
-        "length": 740,
+        "length": 748,
         "offset": 0,
-        "surroundingCode": "import setuptools\n\nsetuptools.setup(\n    name='get-unipa',\n    version=open(\"get-unipa.version\").read(),\n    packages=setuptools.find_packages(),\n    install_requires=[\"beautifulsoup4\", \"requests\", \"html5lib\"],\n    url='https://github.com/book000/get-unipa',\n    license='MIT',\n    author='Tomachi',\n    author_email='tomachi@tomacheese.com',\n    maintainer='Tomachi',\n    maintainer_email='tomachi@tomacheese.com',\n    description='Library for get various information about UNIVERSAL PASSPORT.',\n    long_description=open('README.md', encoding=\"utf-8\").read(),\n    long_description_content_type=\"text/markdown\",\n    classifiers=[\n        'Programming Language :: Python :: 3.10',\n        'License :: OSI Approved :: MIT License',\n    ],\n)"
+        "surroundingCode": "import setuptools\n\nsetuptools.setup(\n    name='get-unipa',\n    version=open(\"get-unipa.version\").read().strip(),\n    packages=setuptools.find_packages(),\n    install_requires=[\"beautifulsoup4\", \"requests\", \"html5lib\"],\n    url='https://github.com/book000/get-unipa',\n    license='MIT',\n    author='Tomachi',\n    author_email='tomachi@tomacheese.com',\n    maintainer='Tomachi',\n    maintainer_email='tomachi@tomacheese.com',\n    description='Library for get various information about UNIVERSAL PASSPORT.',\n    long_description=open('README.md', encoding=\"utf-8\").read(),\n    long_description_content_type=\"text/markdown\",\n    classifiers=[\n        'Programming Language :: Python :: 3.10',\n        'License :: OSI Approved :: MIT License',\n    ],\n)"
       }
     }
   ],
@@ -29,5 +29,5 @@
     "module": "project",
     "inspectionName": "PyInterpreterInspection"
   },
-  "hash": "8276567452773991055"
+  "hash": "878748509948899078"
 }]}
