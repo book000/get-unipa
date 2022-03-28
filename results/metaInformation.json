@@ -1,0 +1,16 @@
+{
+  "total": 0,
+  "tools inspection": {
+    "Code Inspection": 0
+  },
+  "attributes": {
+    "vcs": {
+      "sarifIdea": {
+        "repositoryUri": "https://github.com/book000/get-unipa",
+        "revisionId": "64297366d174a9b31e4647bfb2a3e1f26e39fe79",
+        "branch": "master"
+      }
+    },
+    "deviceId": "200820300000000-b663-2c5d-9844-b5461300d668"
+  }
+}
