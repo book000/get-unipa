@@ -1,0 +1,44 @@
+name: Create Master Pull-request
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  create-release-pr:
+   runs-on: ubuntu-latest
+
+   steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Ruby 3.1
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+        bundler-cache: true
+
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        default_bump: "minor"
+        custom_release_rules: "feat:minor:✨ Features,fix:patch:🐛 Bug Fixes,docs:patch:📰 Docs,chore:patch:🎨 Chore,pref:patch:🎈 Performance improvements,refactor:patch:🧹 Refactoring,build:patch:🔍 Build,ci:patch:🔍 CI,revert:patch:⏪ Revert,style:patch:🧹 Style,test:patch:👀 Test"
+        release_branches: "master"
+        pre_release_branches: "develop"
+        dry_run: true
+
+    - name: Create master pull-request
+      run: |
+        gem install -N git-pr-release -v "2.1.1"
+        git-pr-release --no-fetch
+      env:
+       GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       GIT_PR_RELEASE_BRANCH_PRODUCTION: master
+       GIT_PR_RELEASE_BRANCH_STAGING: develop
+       GIT_PR_RELEASE_LABELS: master-release
+       GIT_PR_RELEASE_TEMPLATE: ./.github/git-pr-release-template.erb
+       NEXT_VERSION: ${{ steps.tag_version.outputs.new_tag }}
