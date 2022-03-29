@@ -2,6 +2,7 @@ venv
 .idea
 config.json
 tests.json
+*.html
 *.pyc
 test.py
 get_unipa.egg-info
