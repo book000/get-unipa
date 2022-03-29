@@ -22,8 +22,16 @@ jobs:
           node-version: 12
 
       - name: Opening pull request
+        id: pull-req
         uses: tretuna/sync-branches@1.4.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FROM_BRANCH: 'master'
           TO_BRANCH: 'develop'
+
+      - name: Review & Auto merge pull request
+        run: |
+          gh pr review ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" -a
+          gh pr merge ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" --auto --merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
