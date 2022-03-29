@@ -34,6 +34,7 @@ jobs:
       - name: Generate docs
         run: |
           pip install pdoc
+          pip install -r requirements.txt
           pdoc -d google -o ${{ runner.temp }}/qodana/results/report/docs unipa
 
       - name: Upload docs artifact
