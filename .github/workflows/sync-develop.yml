@@ -32,7 +32,7 @@ jobs:
 
       - name: Review pull request (by book000)
         run: |
-          gh pr review $${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" -a -b "This review is auto review"
+          gh pr review ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" -a -b "This review is auto review"
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
