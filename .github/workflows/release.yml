@@ -53,11 +53,11 @@ jobs:
       - name: Sed Version
         id: sed_version
         run: |
-          echo $(steps.tag_version.outputs.new_version)> get-unipa.version
+          echo ${{ steps.tag_version.outputs.new_version }}> get-unipa.version
           sed -i 's/-develop./.dev/g' get-unipa.version
-          echo "name=new_version::`cat get-unipa.version`"
-          echo "::set-output name=new_version::`cat get-unipa.version`"
-          echo "::set-output name=new_tag::v`cat get-unipa.version`"
+          echo "name=new_version::$(cat get-unipa.version)"
+          echo "::set-output name=new_version::$(cat get-unipa.version)"
+          echo "::set-output name=new_tag::v$(cat get-unipa.version)"
 
       - name: Publish release
         uses: actions/create-release@v1
