@@ -28,10 +28,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FROM_BRANCH: 'master'
           TO_BRANCH: 'develop'
+          REVIEWERS: '["book000"]'
 
-      - name: Review & Auto merge pull request
+      - name: Auto merge pull request
         run: |
-          gh pr review ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" -a
           gh pr merge ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" --auto --merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
