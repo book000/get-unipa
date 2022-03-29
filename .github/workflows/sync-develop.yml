@@ -1,4 +1,5 @@
-name: Sync develop
+name: Sync Back to Develop
+# see https://bharathvaj.me/blog/keep-two-branches-in-sync
 
 on:
   workflow_dispatch:
@@ -8,30 +9,21 @@ on:
 
 jobs:
   sync:
+    name: Syncing branches
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout develop
+      - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          fetch-depth: 0
-          ref: develop
+          node-version: 12
 
-      - name: Set git config
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config pull.rebase true
-
-      - name: Sync develop (rebase)
-        id: sync-rebase
-        run: |
-          git fetch --all
-          git rebase origin/master develop
-          git merge origin/master
-          git pull origin develop
-          if git push origin develop; then
-            echo "::set-output name=result::true"
-          else
-            echo "::set-output name=result::false"
-          fi
+      - name: Opening pull request
+        uses: tretuna/sync-branches@1.4.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FROM_BRANCH: 'master'
+          TO_BRANCH: 'develop'
