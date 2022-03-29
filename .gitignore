@@ -1,5 +1,9 @@
 venv
-.idea
+.idea/*
+!.idea/misc.xml
+!.idea/inspectionProfiles
+.idea/inspectionProfiles/*
+!.idea/inspectionProfiles/Project_Default.xml
 config.json
 tests.json
 *.pyc
