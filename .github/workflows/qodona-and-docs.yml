@@ -31,6 +31,17 @@ jobs:
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
 
+      - name: Generate docs
+        run: |
+          pip install pdoc
+          pdoc -d google -o ${{ runner.temp }}/qodana/results/report/docs unipa
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ runner.temp }}/qodana/results/report/docs
+          name: docs
+
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
