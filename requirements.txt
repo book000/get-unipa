@@ -2,3 +2,4 @@ requests==2.27.1
 beautifulsoup4==4.10.0
 html5lib==1.1
 mypy==0.942
+types-requests==2.27.15

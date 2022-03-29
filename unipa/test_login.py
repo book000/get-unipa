@@ -39,7 +39,7 @@ class TestUnipa(TestCase):
 
         self.assertTrue(self.unipa.login(username, password), "ログインに失敗しました")
 
-    def test(self):
+    def test(self) -> None:
         """
         ログインテストを書くためだけのメソッド
         """
