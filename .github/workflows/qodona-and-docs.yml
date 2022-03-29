@@ -1,4 +1,4 @@
-name: Qodana Quality
+name: Qodana Quality And Generate documentation
 
 on:
   workflow_dispatch:
