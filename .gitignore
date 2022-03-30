@@ -1,11 +1,13 @@
 venv
-.idea
+.idea/*
+!.idea/inspectionProfiles
+docs/
+build/
+dist/
+
 config.json
 tests.json
 *.html
 *.pyc
 test.py
 get_unipa.egg-info
-docs/
-build/
-dist/

@@ -48,42 +48,42 @@ class Unipa:
             f.write(self.__response.text)
 
         soup = BeautifulSoup(self.__response.text, "html5lib")
-        loginForm = soup.find("form", {"id": "loginForm"})
-        if loginForm is None:
+        login_form = soup.find("form", {"id": "loginForm"})
+        if login_form is None:
             raise UnipaInternalError("ログインフォーム情報の取得に失敗しました。")
 
-        loginUrl = urljoin(self.__base_url, loginForm.get("action"))
-        self.logger.debug("ログインフォームのURL: %s", loginUrl)
+        login_url = urljoin(self.__base_url, login_form.get("action"))
+        self.logger.debug("ログインフォームのURL: %s", login_url)
 
         params = {}
 
-        for inputTag in loginForm.find_all("input"):
-            inputTagName = inputTag.get("name")
-            inputTagValue = inputTag.get("value")
-            if inputTagName is None or inputTagValue is None:
+        for input_tag in login_form.find_all("input"):
+            input_tag_name = input_tag.get("name")
+            input_tag_value = input_tag.get("value")
+            if input_tag_name is None or input_tag_value is None:
                 continue
-            if inputTagValue == "":
-                continue
-
-            params[inputTagName] = inputTagValue
-
-        for buttonTag in loginForm.find_all("button"):
-            buttonTagName = buttonTag.get("name")
-            buttonTagValue = buttonTag.get("value")
-            if buttonTagName is None:
+            if input_tag_value == "":
                 continue
 
-            if buttonTagValue is None:
-                buttonTagValue = ""
+            params[input_tag_name] = input_tag_value
 
-            params[buttonTagName] = buttonTagValue
+        for button_tag in login_form.find_all("button"):
+            button_tag_name = button_tag.get("name")
+            button_tag_value = button_tag.get("value")
+            if button_tag_name is None:
+                continue
+
+            if button_tag_value is None:
+                button_tag_value = ""
+
+            params[button_tag_name] = button_tag_value
 
         self.logger.debug("ログインフォームのデフォルトパラメータ: %s", params)
 
         params["loginForm:userId"] = username
         params["loginForm:password"] = password
 
-        self.__response = self.session.post(loginUrl, data=params, headers={
+        self.__response = self.session.post(login_url, data=params, headers={
             "Content-Type": "application/x-www-form-urlencoded"
         })
 
@@ -91,9 +91,9 @@ class Unipa:
             return False
 
         soup = BeautifulSoup(self.__response.text, "html5lib")
-        errorDetails = soup.find("span", {"class": "ui-messages-error-detail"})
-        if errorDetails is not None:
-            raise UnipaLoginError(errorDetails.text)
+        error_details = soup.find("span", {"class": "ui-messages-error-detail"})
+        if error_details is not None:
+            raise UnipaLoginError(error_details.text)
 
         return True
 
