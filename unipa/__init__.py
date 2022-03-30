@@ -201,8 +201,8 @@ class Unipa:
 
         return True
 
-    def requestFromMenu(self,
-                        menu_item: UnipaNavItem) -> BeautifulSoup:
+    def request_from_menu(self,
+                          menu_item: UnipaNavItem) -> BeautifulSoup:
         """
         メニューからリクエストを送信する
 

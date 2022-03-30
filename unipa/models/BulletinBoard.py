@@ -1,6 +1,7 @@
 """
 掲示板
 """
+from unipa import Unipa
 
 
 class BulletinBoardItemDetails:
@@ -18,7 +19,7 @@ class BulletinBoardItem:
     def __init__(self,
                  title: str,
                  target_s: str,
-                 target_t: str,
+                 target_p: str,
                  flag_id: str,
                  unread_id: str,
                  is_attention: bool,
@@ -30,7 +31,7 @@ class BulletinBoardItem:
         Args:
             title: 掲示タイトル
             target_s: 掲示 s 値 (リクエスト用)
-            target_t: 掲示 t 値 (リクエスト用)
+            target_p: 掲示 p 値 (リクエスト用)
             flag_id: フラグ ID
             unread_id: 未読 ID
             is_attention: 注目フラグ (投稿者によって設定)
@@ -39,7 +40,7 @@ class BulletinBoardItem:
         """
         self._title = title
         self._target_s = target_s
-        self._target_t = target_t
+        self._target_p = target_p
         self._flag_id = flag_id
         self._unread_id = unread_id
         self._is_attention = is_attention
@@ -67,14 +68,14 @@ class BulletinBoardItem:
         return self._target_s
 
     @property
-    def target_t(self) -> str:
+    def target_p(self) -> str:
         """
-        掲示 t 値 (リクエスト用)
+        掲示 p 値 (リクエスト用)
 
         Returns:
             str: 掲示 t 値 (リクエスト用)
         """
-        return self._target_t
+        return self._target_p
 
     @property
     def flag_id(self) -> str:
@@ -126,14 +127,20 @@ class BulletinBoardItem:
         """
         return self._is_unread
 
-    def get_details(self) -> BulletinBoardItemDetails:
+    def get_details(self,
+                    unipa: Unipa) -> BulletinBoardItemDetails:
         """
         掲示アイテムの詳細を取得します。
 
         Returns:
             BulletinBoardItemDetails: 掲示アイテムの詳細
         """
-        pass  # TODO
+        soup = unipa.request("funcForm", {
+            "javax.faces.partial.execute": self.target_s,
+            self.target_s: self.target_p
+        })
+
+        return BulletinBoardItemDetails()
 
     def mark_read(self) -> None:
         """
@@ -160,4 +167,4 @@ class BulletinBoardItem:
         pass  # TODO
 
     def __str__(self) -> str:
-        return f"BulletinBoardItem(title={self.title}, target_s={self.target_s}, target_t={self.target_t}, is_attention={self.is_attention}, is_flag={self.is_flag}, is_unread={self.is_unread})"
+        return f"BulletinBoardItem(title={self.title}, target_s={self.target_s}, target_p={self.target_p}, is_attention={self.is_attention}, is_flag={self.is_flag}, is_unread={self.is_unread})"

@@ -38,7 +38,7 @@ class BulletinBoard:
 
         self.logger.debug(f"BulletinBoard/menu_id: {menu_id}")
 
-        soup = self.unipa.requestFromMenu(nav_item)
+        soup = self.unipa.request_from_menu(nav_item)
 
         if soup.find("div", {"class": "ui-tabs-panels"}) is None:
             raise UnipaInternalError("掲示板パネルが見つかりませんでした。")
