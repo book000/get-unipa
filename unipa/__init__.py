@@ -27,11 +27,71 @@ class UnipaToken:
                  rx_device_kbn: str,
                  rx_login_type: str,
                  javax_view_state: str):
-        self.rx_token = rx_token
-        self.rx_login_key = rx_login_key
-        self.rx_device_kbn = rx_device_kbn
-        self.rx_login_type = rx_login_type
-        self.javax_view_state = javax_view_state
+        """
+        トークンクラス コンストラクタ
+
+        Args:
+            rx_token: トークン
+            rx_login_key: ログインキー
+            rx_device_kbn: デバイス区分
+            rx_login_type: ログイン種別
+            javax_view_state: View state
+        """
+        self._rx_token = rx_token
+        self._rx_login_key = rx_login_key
+        self._rx_device_kbn = rx_device_kbn
+        self._rx_login_type = rx_login_type
+        self._javax_view_state = javax_view_state
+
+    @property
+    def rx_token(self) -> str:
+        """
+        トークン
+
+        Returns:
+            str: トークン
+        """
+        return self._rx_token
+
+    @property
+    def rx_login_key(self) -> str:
+        """
+        ログインキー
+
+        Returns:
+            str: ログインキー
+        """
+        return self._rx_login_key
+
+    @property
+    def rx_device_kbn(self) -> str:
+        """
+        デバイス区分
+
+        Returns:
+            str: デバイス区分
+        """
+        return self._rx_device_kbn
+
+    @property
+    def rx_login_type(self) -> str:
+        """
+        ログイン種別
+
+        Returns:
+            str: ログイン種別
+        """
+        return self._rx_login_type
+
+    @property
+    def javax_view_state(self) -> str:
+        """
+        View state
+
+        Returns:
+            str: View state
+        """
+        return self._javax_view_state
 
 
 class Unipa:
@@ -82,13 +142,16 @@ class Unipa:
         soup = BeautifulSoup(self.__response.text, "html5lib")
         login_form = soup.find("form", {"id": "loginForm"})
         if login_form is None:
+            # form#loginForm が見つからない場合、ログイントークンなどが取得できないのでログイン不可
             raise UnipaInternalError("ログインフォーム情報の取得に失敗しました。")
 
+        # ログインURL構成 (base_url + actionの値)
         login_url = urljoin(self.__base_url, login_form.get("action"))
         self.logger.debug("ログインフォームのURL: %s", login_url)
 
         params = {}
 
+        # input と button の値をログイン処理でそのまま流用する
         for input_tag in login_form.find_all("input"):
             input_tag_name = input_tag.get("name")
             input_tag_value = input_tag.get("value")

@@ -17,11 +17,38 @@ class Menu:
     def __init__(self,
                  name: str,
                  sub_name: Optional[str]):
-        self.name = name
-        self.sub_name = sub_name
+        """
+        ナビゲーションメニュー コンストラクタ
+
+        Args:
+            name: メニュー名
+            sub_name: サブメニュー名
+        """
+        self._name = name
+        self._sub_name = sub_name
+
+    @property
+    def name(self) -> str:
+        """
+        メニュー名
+
+        Returns:
+            str: メニュー名
+        """
+        return self._name
+
+    @property
+    def sub_name(self) -> Optional[str]:
+        """
+        サブメニュー名
+
+        Returns:
+            Optional[str]: サブメニュー名
+        """
+        return self._sub_name
 
     def __str__(self) -> str:
-        return f"Menu(name={self.name}, sub_name={self.sub_name})"
+        return f"Menu(_name={self.name}, sub__name={self.sub_name})"
 
 
 class UnipaNavItem:
@@ -33,12 +60,50 @@ class UnipaNavItem:
                  menu: Menu,
                  name: str,
                  menu_id: Optional[str]):
-        self.menu = menu
-        self.name = name
-        self.menu_id = menu_id
+        """
+        ナビゲーションアイテム コンストラクタ
+
+        Args:
+            menu: メニュー
+            name: アイテム名
+            menu_id: メニュー ID
+        """
+        self._menu = menu
+        self._name = name
+        self._menu_id = menu_id
+
+    @property
+    def menu(self) -> Menu:
+        """
+        メニュー
+
+        Returns:
+            Menu: メニュー
+        """
+        return self._menu
+
+    @property
+    def name(self) -> str:
+        """
+        アイテム名
+
+        Returns:
+            str: アイテム名
+        """
+        return self._name
+
+    @property
+    def menu_id(self) -> Optional[str]:
+        """
+        メニュー ID
+
+        Returns:
+            Optional[str]: メニュー ID
+        """
+        return self._menu_id
 
     def __str__(self) -> str:
-        return f"UnipaNavItem(menu={self.menu}, name={self.name}, menu_id={self.menu_id})"
+        return f"UnipaNavItem(_menu={self._menu}, _name={self._name}, __menu_id={self._menu_id})"
 
 
 class UnipaUtils:

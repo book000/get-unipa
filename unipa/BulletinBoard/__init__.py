@@ -58,15 +58,34 @@ class BulletinBoard:
             a_tag = item.find("a")
             title = a_tag.text
             onclick = a_tag.get("onclick")
-            [target_s, target_p] = self.get_target_sp(onclick)
+            [target_s, target_p] = self.get_target_sp(onclick)  # idを拾ってもいい
             if target_s is None or target_p is None:
                 continue
 
             is_attention = item.select_one("i.iconColorAttention") is not None
-            is_flag = False  # TODO
-            is_unread = False  # TODO
 
-            items.append(BulletinBoardItem(title, target_s, target_p, is_attention, is_flag, is_unread))
+            buttons = panel.select("span.inlineBlock > div[type=\"button\"]")
+            if len(buttons) < 2:
+                raise UnipaInternalError("掲示板パネルのうち、フラグ・未/既読ボタンが見つかりませんでした。")
+
+            flag_input = buttons[0].select_one("input[type=\"checkbox\"]")
+            flag_id = flag_input.get("id")
+            is_flag = flag_input.get("checked") is None
+
+            unread_input = buttons[1].select_one("input[type=\"checkbox\"]")
+            unread_id = unread_input.get("id")
+            is_unread = unread_input.get("checked") is not None
+
+            items.append(BulletinBoardItem(
+                title,
+                target_s,
+                target_p,
+                flag_id,
+                unread_id,
+                is_attention,
+                is_flag,
+                is_unread
+            ))
 
         return items
 
