@@ -13,6 +13,7 @@ class TestUnipa(TestCase):
     ユニットテスト
     """
 
+    # noinspection PyPep8Naming
     def setUp(self) -> None:
         """
         テストセットアップ
