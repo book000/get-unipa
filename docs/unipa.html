@@ -18,8 +18,45 @@
         <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
         <div>
 
+            <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
+                   pattern=".+" required>
 
 
+        <h2>Submodules</h2>
+        <ul>
+                <li><a href="unipa/test_login.html">unipa.test_login</a></li>
+        </ul>
+
+        <h2>API Documentation</h2>
+            <ul class="memberlist">
+            <li>
+                    <a class="class" href="#Unipa">Unipa</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#Unipa.__init__">Unipa</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Unipa.login">login</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Unipa.get_latest_response">get_latest_response</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#UnipaInternalError">UnipaInternalError</a>
+                            <ul class="memberlist">
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#UnipaLoginError">UnipaLoginError</a>
+                            <ul class="memberlist">
+                </ul>
+
+            </li>
+    </ul>
 
 
 
@@ -35,9 +72,660 @@
                     <h1 class="modulename">
 unipa    </h1>
 
-                
-                
+                        <div class="docstring"><p>Library for get various information about UNIVERSAL PASSPORT.</p>
+
+<p>UNIVERSAL PASSPORT のさまざまな情報を取得するためのライブラリです。</p>
+</div>
+
+                        <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span><span class="c1"># coding: utf-8</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Library for get various information about UNIVERSAL PASSPORT.</span>
+
+<span class="sd">UNIVERSAL PASSPORT のさまざまな情報を取得するためのライブラリです。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
+
+
+<span class="k">class</span> <span class="nc">Unipa</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    UNIVERSAL PASSPORT 基本ライブラリ</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">base_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+              <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UNIVERSAL PASSPORT にログインする</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            username: ユーザー名</span>
+<span class="sd">            password: パスワード</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ログインできたか</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインページの取得に失敗しました。&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
+        <span class="n">login_form</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loginForm&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">login_form</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインフォーム情報の取得に失敗しました。&quot;</span><span class="p">)</span>
+
+        <span class="n">login_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">,</span> <span class="n">login_form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ログインフォームのURL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">login_url</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">input_tag</span> <span class="ow">in</span> <span class="n">login_form</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">):</span>
+            <span class="n">input_tag_name</span> <span class="o">=</span> <span class="n">input_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">input_tag_value</span> <span class="o">=</span> <span class="n">input_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_tag_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">input_tag_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">input_tag_value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="n">input_tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_tag_value</span>
+
+        <span class="k">for</span> <span class="n">button_tag</span> <span class="ow">in</span> <span class="n">login_form</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">):</span>
+            <span class="n">button_tag_name</span> <span class="o">=</span> <span class="n">button_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">button_tag_value</span> <span class="o">=</span> <span class="n">button_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">button_tag_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">button_tag_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">button_tag_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="n">button_tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">button_tag_value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ログインフォームのデフォルトパラメータ: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;loginForm:userId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;loginForm:password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">login_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/x-www-form-urlencoded&quot;</span>
+        <span class="p">})</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
+        <span class="n">error_details</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ui-messages-error-detail&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">error_details</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaLoginError</span><span class="p">(</span><span class="n">error_details</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">get_latest_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        最後のレスポンスを返します。デバッグのために利用することを想定しています。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[Response]: レスポンス (ない場合は None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span>
+
+
+<span class="k">class</span> <span class="nc">UnipaInternalError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    処理に失敗した</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UnipaLoginError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ログインに失敗した</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+        </details>
+
             </section>
+                <section id="Unipa">
+                                <div class="attr class">
+        <a class="headerlink" href="#Unipa">#&nbsp;&nbsp</a>
+
+        
+        <span class="def">class</span>
+        <span class="name">Unipa</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Unipa</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    UNIVERSAL PASSPORT 基本ライブラリ</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">base_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+              <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UNIVERSAL PASSPORT にログインする</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            username: ユーザー名</span>
+<span class="sd">            password: パスワード</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ログインできたか</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインページの取得に失敗しました。&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
+        <span class="n">login_form</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loginForm&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">login_form</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインフォーム情報の取得に失敗しました。&quot;</span><span class="p">)</span>
+
+        <span class="n">login_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">,</span> <span class="n">login_form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ログインフォームのURL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">login_url</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">input_tag</span> <span class="ow">in</span> <span class="n">login_form</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">):</span>
+            <span class="n">input_tag_name</span> <span class="o">=</span> <span class="n">input_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">input_tag_value</span> <span class="o">=</span> <span class="n">input_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_tag_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">input_tag_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">input_tag_value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="n">input_tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_tag_value</span>
+
+        <span class="k">for</span> <span class="n">button_tag</span> <span class="ow">in</span> <span class="n">login_form</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">):</span>
+            <span class="n">button_tag_name</span> <span class="o">=</span> <span class="n">button_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">button_tag_value</span> <span class="o">=</span> <span class="n">button_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">button_tag_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">button_tag_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">button_tag_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="n">button_tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">button_tag_value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ログインフォームのデフォルトパラメータ: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;loginForm:userId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;loginForm:password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">login_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/x-www-form-urlencoded&quot;</span>
+        <span class="p">})</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
+        <span class="n">error_details</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ui-messages-error-detail&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">error_details</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaLoginError</span><span class="p">(</span><span class="n">error_details</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">get_latest_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        最後のレスポンスを返します。デバッグのために利用することを想定しています。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[Response]: レスポンス (ない場合は None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>UNIVERSAL PASSPORT 基本ライブラリ</p>
+</div>
+
+
+                            <div id="Unipa.__init__" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#Unipa.__init__">#&nbsp;&nbsp</a>
+
+        
+            <span class="name">Unipa</span><span class="signature">(base_url: str)</span>
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">base_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+
+        </details>
+
+    
+
+                            </div>
+                            <div id="Unipa.login" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#Unipa.login">#&nbsp;&nbsp</a>
+
+        
+            <span class="def">def</span>
+            <span class="name">login</span><span class="signature">(self, username: str, password: str) -&gt; bool</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+              <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+              <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        UNIVERSAL PASSPORT にログインする</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            username: ユーザー名</span>
+<span class="sd">            password: パスワード</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ログインできたか</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインページの取得に失敗しました。&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
+        <span class="n">login_form</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loginForm&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">login_form</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインフォーム情報の取得に失敗しました。&quot;</span><span class="p">)</span>
+
+        <span class="n">login_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">,</span> <span class="n">login_form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ログインフォームのURL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">login_url</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">input_tag</span> <span class="ow">in</span> <span class="n">login_form</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">):</span>
+            <span class="n">input_tag_name</span> <span class="o">=</span> <span class="n">input_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">input_tag_value</span> <span class="o">=</span> <span class="n">input_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">input_tag_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">input_tag_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">input_tag_value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="n">input_tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_tag_value</span>
+
+        <span class="k">for</span> <span class="n">button_tag</span> <span class="ow">in</span> <span class="n">login_form</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">):</span>
+            <span class="n">button_tag_name</span> <span class="o">=</span> <span class="n">button_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">button_tag_value</span> <span class="o">=</span> <span class="n">button_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">button_tag_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">button_tag_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">button_tag_value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">params</span><span class="p">[</span><span class="n">button_tag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">button_tag_value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ログインフォームのデフォルトパラメータ: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;loginForm:userId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;loginForm:password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">login_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/x-www-form-urlencoded&quot;</span>
+        <span class="p">})</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
+        <span class="n">error_details</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ui-messages-error-detail&quot;</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">error_details</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaLoginError</span><span class="p">(</span><span class="n">error_details</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>UNIVERSAL PASSPORT にログインする</p>
+
+<h6 id="args">Args</h6>
+
+<ul>
+<li><strong>username:</strong>  ユーザー名</li>
+<li><strong>password:</strong>  パスワード</li>
+</ul>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>bool: ログインできたか</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                            <div id="Unipa.get_latest_response" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#Unipa.get_latest_response">#&nbsp;&nbsp</a>
+
+        
+            <span class="def">def</span>
+            <span class="name">get_latest_response</span><span class="signature">(self) -&gt; Optional[requests.models.Response]</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">get_latest_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        最後のレスポンスを返します。デバッグのために利用することを想定しています。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[Response]: レスポンス (ない場合は None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>最後のレスポンスを返します。デバッグのために利用することを想定しています。</p>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>Optional[Response]: レスポンス (ない場合は None)</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                </section>
+                <section id="UnipaInternalError">
+                                <div class="attr class">
+        <a class="headerlink" href="#UnipaInternalError">#&nbsp;&nbsp</a>
+
+        
+        <span class="def">class</span>
+        <span class="name">UnipaInternalError</span><wbr>(<span class="base">builtins.Exception</span>):
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span><span class="k">class</span> <span class="nc">UnipaInternalError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    処理に失敗した</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>処理に失敗した</p>
+</div>
+
+
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>builtins.Exception</dt>
+                                <dd id="UnipaInternalError.__init__" class="function">Exception</dd>
+
+            </div>
+            <div><dt>builtins.BaseException</dt>
+                                <dd id="UnipaInternalError.with_traceback" class="function">with_traceback</dd>
+                <dd id="UnipaInternalError.args" class="variable">args</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+                <section id="UnipaLoginError">
+                                <div class="attr class">
+        <a class="headerlink" href="#UnipaLoginError">#&nbsp;&nbsp</a>
+
+        
+        <span class="def">class</span>
+        <span class="name">UnipaLoginError</span><wbr>(<span class="base">builtins.Exception</span>):
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span><span class="k">class</span> <span class="nc">UnipaLoginError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ログインに失敗した</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>ログインに失敗した</p>
+</div>
+
+
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>builtins.Exception</dt>
+                                <dd id="UnipaLoginError.__init__" class="function">Exception</dd>
+
+            </div>
+            <div><dt>builtins.BaseException</dt>
+                                <dd id="UnipaLoginError.with_traceback" class="function">with_traceback</dd>
+                <dd id="UnipaLoginError.args" class="variable">args</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
     </main>
-</body>
+<script>
+    function escapeHTML(html) {
+        return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;
+    }
+
+    const originalContent = document.querySelector("main.pdoc");
+    let currentContent = originalContent;
+
+    function setContent(innerHTML) {
+        let elem;
+        if (innerHTML) {
+            elem = document.createElement("main");
+            elem.classList.add("pdoc");
+            elem.innerHTML = innerHTML;
+        } else {
+            elem = originalContent;
+        }
+        if (currentContent !== elem) {
+            currentContent.replaceWith(elem);
+            currentContent = elem;
+        }
+    }
+
+    function getSearchTerm() {
+        return (new URL(window.location)).searchParams.get("search");
+    }
+
+    const searchBox = document.querySelector(".pdoc input[type=search]");
+    searchBox.addEventListener("input", function () {
+        let url = new URL(window.location);
+        if (searchBox.value.trim()) {
+            url.hash = "";
+            url.searchParams.set("search", searchBox.value);
+        } else {
+            url.searchParams.delete("search");
+        }
+        history.replaceState("", "", url.toString());
+        onInput();
+    });
+    window.addEventListener("popstate", onInput);
+
+
+    let search, searchErr;
+
+    async function initialize() {
+        try {
+            search = await new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.type = "text/javascript";
+                script.async = true;
+                script.onload = () => resolve(window.pdocSearch);
+                script.onerror = (e) => reject(e);
+                script.src = "search.js";
+                document.getElementsByTagName("head")[0].appendChild(script);
+            });
+        } catch (e) {
+            console.error("Cannot fetch pdoc search index");
+            searchErr = "Cannot fetch search index.";
+        }
+        onInput();
+
+        document.querySelector("nav.pdoc").addEventListener("click", e => {
+            if (e.target.hash) {
+                searchBox.value = "";
+                searchBox.dispatchEvent(new Event("input"));
+            }
+        });
+    }
+
+    function onInput() {
+        setContent((() => {
+            const term = getSearchTerm();
+            if (!term) {
+                return null
+            }
+            if (searchErr) {
+                return `<h3>Error: ${searchErr}</h3>`
+            }
+            if (!search) {
+                return "<h3>Searching...</h3>"
+            }
+
+            window.scrollTo({top: 0, left: 0, behavior: 'auto'});
+
+            const results = search(term);
+
+            let html;
+            if (results.length === 0) {
+                html = `No search results for '${escapeHTML(term)}'.`
+            } else {
+                html = `<h4>${results.length} search result${results.length > 1 ? "s" : ""} for '${escapeHTML(term)}'.</h4>`;
+            }
+            for (let result of results.slice(0, 10)) {
+                let doc = result.doc;
+                let url = `${doc.modulename.replaceAll(".", "/")}.html`;
+                if (doc.qualname) {
+                    url += `#${doc.qualname}`;
+                }
+
+                let heading;
+                switch (result.doc.type) {
+                    case "function":
+                        heading = `<span class="def">${doc.funcdef}</span> <span class="name">${doc.fullname}</span><span class="signature">${doc.signature}:</span>`;
+                        break;
+                    case "class":
+                        heading = `<span class="def">class</span> <span class="name">${doc.fullname}</span>`;
+                        if (doc.bases)
+                            heading += `<wbr>(<span class="base">${doc.bases}</span>)`;
+                        heading += `:`;
+                        break;
+                    case "variable":
+                        heading = `<span class="name">${doc.fullname}</span>`;
+                        if (doc.annotation)
+                            heading += `<span class="annotation">${doc.annotation}</span>`;
+                        if (doc.default_value)
+                            heading += `<span class="default_value">${doc.default_value}</span>`;
+                        break;
+                    default:
+                        heading = `<span class="name">${doc.fullname}</span>`;
+                        break;
+                }
+                html += `
+                        <section class="search-result">
+                        <a href="${url}" class="attr ${doc.type}">${heading}</a>
+                        <div class="docstring">${doc.doc}</div>
+                        </section>
+                    `;
+
+            }
+            return html;
+        })());
+    }
+
+    if (getSearchTerm()) {
+        initialize();
+        searchBox.value = getSearchTerm();
+        onInput();
+    } else {
+        searchBox.addEventListener("focus", initialize, {once: true});
+    }
+
+    searchBox.addEventListener("keydown", e => {
+        if (["ArrowDown", "ArrowUp", "Enter"].includes(e.key)) {
+            let focused = currentContent.querySelector(".search-result.focused");
+            if (!focused) {
+                currentContent.querySelector(".search-result").classList.add("focused");
+            } else if (
+                e.key === "ArrowDown"
+                && focused.nextElementSibling
+                && focused.nextElementSibling.classList.contains("search-result")
+            ) {
+                focused.classList.remove("focused");
+                focused.nextElementSibling.classList.add("focused");
+                focused.nextElementSibling.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "nearest"
+                });
+            } else if (
+                e.key === "ArrowUp"
+                && focused.previousElementSibling
+                && focused.previousElementSibling.classList.contains("search-result")
+            ) {
+                focused.classList.remove("focused");
+                focused.previousElementSibling.classList.add("focused");
+                focused.previousElementSibling.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "nearest"
+                });
+            } else if (
+                e.key === "Enter"
+            ) {
+                focused.querySelector("a").click();
+            }
+        }
+    });
+</script></body>
 </html>

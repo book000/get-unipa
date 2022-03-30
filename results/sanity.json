@@ -12,6 +12,64 @@
   "sources": [
     {
       "type": "file",
+      "path": "unipa/__init__.py",
+      "language": "Python",
+      "line": 1,
+      "offset": 0,
+      "length": 3281
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyInterpreterInspection"
+  },
+  "hash": "6781857145654961513"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "An invalid interpreter",
+  "tags": [
+    "Python",
+    "Sanity"
+  ],
+  "severity": "Critical",
+  "comment": "No Python interpreter configured for the project",
+  "detailsInfo": "Reports problems if there is no Python interpreter configured for the project or if the interpreter is invalid. Without a properly\nconfigured interpreter, you cannot execute your Python scripts and benefit from some Python code insight features.\n\nThe IDE provides quick access to the interpreter settings.",
+  "sources": [
+    {
+      "type": "file",
+      "path": "unipa/test_login.py",
+      "language": "Python",
+      "line": 1,
+      "offset": 0,
+      "length": 1093,
+      "code": {
+        "startLine": 1,
+        "length": 1093,
+        "offset": 0,
+        "surroundingCode": "\"\"\"\nユニットテスト\n\"\"\"\nimport json\nimport os\nfrom unittest import TestCase\n\nfrom unipa import Unipa, UnipaLoginError\n\n\nclass TestUnipa(TestCase):\n    \"\"\"\n    ユニットテスト\n    \"\"\"\n\n    # noinspection PyPep8Naming\n    def setUp(self) -> None:\n        \"\"\"\n        テストセットアップ\n        \"\"\"\n        if not os.path.exists(\"config.json\"):\n            self.fail(\"テストに必要なファイル config.json が見つかりません\")\n\n        if not os.path.exists(\"tests.json\"):\n            self.fail(\"テストに必要なファイル tests.json が見つかりません\")\n\n        with open(\"config.json\", encoding=\"utf-8\") as f:\n            self.config = json.load(f)\n\n        with open(\"tests.json\", encoding=\"utf-8\") as f:\n            self.tests = json.load(f)\n\n        self.base_url = self.config[\"base_url\"]\n        self.unipa = Unipa(self.base_url)\n\n        self.assertRaises(UnipaLoginError, self.unipa.login, \"XXXXXXXX\", \"XXXXXXXX\")\n\n        username = self.config[\"username\"]\n        password = self.config[\"password\"]\n\n        self.assertTrue(self.unipa.login(username, password), \"ログインに失敗しました\")\n\n    def test(self) -> None:\n        \"\"\"\n        ログインテストを書くためだけのメソッド\n        \"\"\""
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyInterpreterInspection"
+  },
+  "hash": "2816888060276178740"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "An invalid interpreter",
+  "tags": [
+    "Python",
+    "Sanity"
+  ],
+  "severity": "Critical",
+  "comment": "No Python interpreter configured for the project",
+  "detailsInfo": "Reports problems if there is no Python interpreter configured for the project or if the interpreter is invalid. Without a properly\nconfigured interpreter, you cannot execute your Python scripts and benefit from some Python code insight features.\n\nThe IDE provides quick access to the interpreter settings.",
+  "sources": [
+    {
+      "type": "file",
       "path": "setup.py",
       "language": "Python",
       "line": 1,
