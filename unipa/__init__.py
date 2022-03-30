@@ -5,12 +5,33 @@ Library for get various information about UNIVERSAL PASSPORT.
 UNIVERSAL PASSPORT のさまざまな情報を取得するためのライブラリです。
 """
 import logging
-from typing import Optional
+from typing import List, Optional
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
 from requests import Response
+
+from unipa.errors import UnipaInternalError, UnipaLoginError, UnipaNotLoggedIn
+from unipa.unipa_utils import UnipaNavItem, UnipaUtils
+
+
+class UnipaToken:
+    """
+    トークンクラス
+    """
+
+    def __init__(self,
+                 rx_token: str,
+                 rx_login_key: str,
+                 rx_device_kbn: str,
+                 rx_login_type: str,
+                 javax_view_state: str):
+        self.rx_token = rx_token
+        self.rx_login_key = rx_login_key
+        self.rx_device_kbn = rx_device_kbn
+        self.rx_login_type = rx_login_type
+        self.javax_view_state = javax_view_state
 
 
 class Unipa:
@@ -20,11 +41,22 @@ class Unipa:
 
     def __init__(self,
                  base_url: str):
+        """
+        Unipa クラスを初期化します
+
+        Args:
+            base_url: UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)
+        """
         self.session: requests.Session = requests.Session()
         self.logger = logging.getLogger(__name__)
         self.__base_url: str = base_url
         self.__logged_in: bool = False
         self.__response: Optional[Response] = None
+
+        self.__token: Optional[UnipaToken] = None
+        self.__nav_items: List[UnipaNavItem] = []
+
+        self.__request_url: Optional[str] = None
 
     def login(self,
               username: str,
@@ -95,7 +127,99 @@ class Unipa:
         if error_details is not None:
             raise UnipaLoginError(error_details.text)
 
+        self.__logged_in = True
+        self.update_token(soup)
+
+        utils = UnipaUtils()
+        self.__nav_items = utils.get_nav_items(soup)
+
+        header_form = soup.find("form", {"id": "headerForm"})
+        self.__request_url = urljoin(self.__base_url, header_form.get("action"))
+
         return True
+
+    def requestFromMenu(self,
+                        menu_item: UnipaNavItem) -> BeautifulSoup:
+        """
+        メニューからリクエストを送信する
+
+        Args:
+            menu_item: メニューアイテム
+
+        Returns:
+            Response: レスポンス
+        """
+        if not self.__logged_in or self.__request_url is None or self.__token is None:
+            raise UnipaNotLoggedIn()
+
+        return self.request("menuForm", {
+            "menuForm:mainMenu": "menuForm:mainMenu",
+            "rx.sync.source": "menuForm:mainMenu",
+            "menuForm:mainMenu_menuid": str(menu_item.menu_id),
+        })
+
+    def request(self,
+                request_type: str,
+                extra_params: dict[str, str]) -> BeautifulSoup:
+        """
+        リクエストを送信する
+
+        Args:
+            request_type: リクエストタイプ (menuForm, funcForm など)
+            extra_params: リクエストに付加するパラメータ (トークンなど以外)
+
+        Returns:
+            Response: レスポンス
+        """
+        if not self.__logged_in or self.__request_url is None or self.__token is None:
+            raise UnipaNotLoggedIn()
+
+        params = {
+            "rx-token": self.__token.rx_token,
+            "rx-loginKey": self.__token.rx_login_key,
+            "rx-deviceKbn": self.__token.rx_device_kbn,
+            "rx-loginType": self.__token.rx_login_type,
+            "javax.faces.ViewState": self.__token.javax_view_state,
+            request_type: request_type
+        }
+        params.update(extra_params)
+
+        self.__response = self.session.post(self.__request_url, params=params)
+
+        if self.__response.status_code != 200:
+            raise UnipaInternalError("リクエストに失敗しました。(" + str(self.__response.status_code) + ")")
+
+        soup = BeautifulSoup(self.__response.text, "html5lib")
+        self.update_token(soup)
+
+        return soup
+
+    def is_logged_in(self) -> bool:
+        """
+        ログインしているかどうかを返します。
+
+        Returns:
+            bool: ログインしているかどうか
+        """
+        return self.__logged_in
+
+    def get_token(self) -> Optional[UnipaToken]:
+        """
+        トークンを返します。
+
+        Returns:
+            Optional[UnipaToken]: トークン
+        """
+        return self.__token
+
+    def get_nav_items(self) -> List[UnipaNavItem]:
+        """
+        ナビゲーションアイテムを返します。
+
+        Returns:
+            List[UnipaNavItem]: ナビゲーションアイテム
+        """
+        return self.__nav_items
 
     def get_latest_response(self) -> Optional[Response]:
         """
@@ -106,14 +230,19 @@ class Unipa:
         """
         return self.__response
 
+    def update_token(self,
+                     soup: BeautifulSoup) -> None:
+        """
+        トークンをアップデートします。
+        """
+        header_form = soup.find("form", {"id": "headerForm"})
+        if header_form is None:
+            raise UnipaInternalError("トークンを更新するためのフォーム情報の取得に失敗しました。")
 
-class UnipaInternalError(Exception):
-    """
-    処理に失敗した
-    """
+        rx_token = header_form.find("input", {"name": "rx-token"}).get("value")
+        rx_login_key = header_form.find("input", {"name": "rx-loginKey"}).get("value")
+        rx_device_kbn = header_form.find("input", {"name": "rx-deviceKbn"}).get("value")
+        rx_login_type = header_form.find("input", {"name": "rx-loginType"}).get("value")
+        javax_view_state = header_form.select_one("input[name=\"javax.faces.ViewState\"]").get("value")
 
-
-class UnipaLoginError(Exception):
-    """
-    ログインに失敗した
-    """
+        self.__token = UnipaToken(rx_token, rx_login_key, rx_device_kbn, rx_login_type, javax_view_state)
