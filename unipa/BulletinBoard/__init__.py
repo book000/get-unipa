@@ -9,7 +9,7 @@ from unipa.errors import UnipaInternalError, UnipaNotLoggedIn
 from unipa.models.BulletinBoard import BulletinBoardItem
 
 
-class BulletinBoard:
+class UnipaBulletinBoard:
     """
     掲示板
     """
@@ -27,7 +27,7 @@ class BulletinBoard:
         掲示リストを取得します。
 
         Returns:
-
+            List[BulletinBoardItem]: 掲示リスト
         """
 
         if not self.unipa.is_logged_in():
