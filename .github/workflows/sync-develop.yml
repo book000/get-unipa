@@ -1,4 +1,5 @@
-name: Sync develop
+name: Sync Back to Develop
+# see https://bharathvaj.me/blog/keep-two-branches-in-sync
 
 on:
   workflow_dispatch:
@@ -8,36 +9,35 @@ on:
 
 jobs:
   sync:
+    name: Syncing branches
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout develop
+      - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
-          fetch-depth: 0
-          ref: develop
+          node-version: 12
 
-      - name: Set git config
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config pull.rebase true
+      - name: Opening pull request
+        id: pull-req
+        uses: tretuna/sync-branches@1.4.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FROM_BRANCH: 'master'
+          TO_BRANCH: 'develop'
+          REVIEWERS: '["book000"]'
 
-      - name: Sync develop (rebase)
-        id: sync-rebase
+      - name: Review pull request (by book000)
         run: |
-          git fetch --all
-          git rebase origin/master develop
-          git pull origin develop
-          if git push origin develop; then
-            echo "::set-output name=result::true"
-          else
-            echo "::set-output name=result::false"
-          fi
+          gh pr review ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" -a -b "This review is auto review"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: Sync develop (merge)
-        if: steps.sync-rebase.outputs.result == 'false'
+      - name: Auto merge pull request
         run: |
-          git merge origin/master
-          git pull origin develop
-          git push origin develop
+          gh pr merge ${{ steps.pull-req.outputs.PULL_REQUEST_NUMBER }} -R "$GITHUB_REPOSITORY" --auto --merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
