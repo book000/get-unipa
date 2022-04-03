@@ -142,25 +142,47 @@ class BulletinBoardItem:
 
         return BulletinBoardItemDetails()
 
-    def mark_read(self) -> None:
+    def mark_read(self,
+                  unipa: Unipa) -> None:
         """
         既読にする
         """
+        soup = unipa.request("funcForm", {
+            "javax.faces.partial.ajax": "true",
+            "javax.faces.source": self.target_s,
+            "javax.faces.partial.execute": self.target_s,
+            "javax.faces.partial.render": "funcForm:tabArea",
+            "javax.faces.behavior.event": "change",
+            "javax.faces.partial.event": "change",
+        }, "lxml")
         pass  # TODO
 
-    def mark_unread(self) -> None:
+    def mark_unread(self,
+                    unipa: Unipa) -> None:
         """
         未読にする
         """
+        soup = unipa.request("funcForm", {
+            "javax.faces.partial.ajax": "true",
+            "javax.faces.source": self.target_s,
+            "javax.faces.partial.execute": self.target_s,
+            "javax.faces.partial.render": "funcForm:tabArea",
+            "javax.faces.behavior.event": "change",
+            "javax.faces.partial.event": "change",
+            "funcForm:tabArea_activeIndex": "1",
+            self.unread_id: "on"
+        }, "lxml")
         pass  # TODO
 
-    def mark_flag(self) -> None:
+    def mark_flag(self,
+                  unipa: Unipa) -> None:
         """
         フラグをつける
         """
         pass  # TODO
 
-    def mark_unflag(self) -> None:
+    def mark_unflag(self,
+                    unipa: Unipa) -> None:
         """
         フラグをはずす
         """

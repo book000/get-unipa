@@ -108,6 +108,7 @@ class Unipa:
             base_url: UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)
         """
         self.session: requests.Session = requests.Session()
+        self.session.headers["User-Agent"] = "get-unipa (https://github.com/book000/get-unipa)"
         self.logger = logging.getLogger(__name__)
         self.__base_url: str = base_url
         self.__logged_in: bool = False
@@ -223,13 +224,15 @@ class Unipa:
 
     def request(self,
                 request_type: str,
-                extra_params: dict[str, str]) -> BeautifulSoup:
+                extra_params: dict[str, str],
+                response_markup: str = "html5lib") -> BeautifulSoup:
         """
         リクエストを送信する
 
         Args:
             request_type: リクエストタイプ (menuForm, funcForm など)
             extra_params: リクエストに付加するパラメータ (トークンなど以外)
+            response_markup: レスポンスのマークアップ
 
         Returns:
             Response: レスポンス
@@ -247,13 +250,24 @@ class Unipa:
         }
         params.update(extra_params)
 
-        self.__response = self.session.post(self.__request_url, params=params)
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+        if response_markup == "lxml":
+            headers["Accept"] = "application/xml"
+            headers["Faces-Request"] = "partial/ajax"
+            headers["X-Requested-With"] = "XMLHttpRequest"
+
+        self.__response = self.session.post(self.__request_url, data=params, headers=headers)
 
         if self.__response.status_code != 200:
             raise UnipaInternalError("リクエストに失敗しました。(" + str(self.__response.status_code) + ")")
 
-        soup = BeautifulSoup(self.__response.text, "html5lib")
-        self.update_token(soup)
+        soup = BeautifulSoup(self.__response.text, response_markup)
+        self.logger.debug("soupレスポンス: %s", soup.prettify())
+
+        if response_markup == "html5lib":
+            self.update_token(soup)
 
         return soup
 
