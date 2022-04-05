@@ -1,6 +1,7 @@
 """
 テストデータ作成
 """
+import datetime
 import logging
 import os
 from typing import List
@@ -73,8 +74,8 @@ class GenerateTestData:
         return ret
 
     def get_bulletinboard_get_details(self,
-                                      bulletinboard_items: List[UnipaBulletinBoardItem]) -> List[
-        BulletinBoardGetDetailsModel]:
+                                      bulletinboard_items: List[UnipaBulletinBoardItem]) \
+            -> List[BulletinBoardGetDetailsModel]:
         """
         掲示板 掲示詳細
         """
@@ -82,21 +83,27 @@ class GenerateTestData:
 
         for item in bulletinboard_items:
             details = item.get_details(self.unipa)
-            day_of_week = '月火水木金土日'
             ret.append(BulletinBoardGetDetailsModel(
                 title=details.title,
                 author=details.author,
                 category=details.category,
                 content_html=details.content_html,
                 publication_period=PublicationPeriodModel(
-                    start_date=details.publication_period.start_date.strftime("%Y/%m/%d(DAYOFWEEK) %H:%M")
-                        .replace("DAYOFWEEK", day_of_week[details.publication_period.start_date.weekday()]),
-                    end_date=details.publication_period.end_date.strftime("%Y/%m/%d(DAYOFWEEK) %H:%M")
-                        .replace("DAYOFWEEK", day_of_week[details.publication_period.end_date.weekday()]),
+                    start_date=self.datetime2str(details.publication_period.start_date),
+                    end_date=self.datetime2str(details.publication_period.end_date),
                 )
             ))
 
         return ret
+
+    @classmethod
+    def datetime2str(cls,
+                     dt: datetime.datetime) -> str:
+        """
+        datetime を str に変換
+        """
+        day_of_week = '月火水木金土日'
+        return dt.strftime("%Y/%m/%d(DAYOFWEEK) %H:%M").replace("DAYOFWEEK", day_of_week[dt.weekday()])
 
 
 def main() -> None:
