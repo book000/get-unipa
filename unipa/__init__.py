@@ -220,7 +220,7 @@ class Unipa:
         })
 
     def request(self,
-                request_target: UnipaRequestUrl.KEYS,
+                request_target: str,
                 request_type: str,
                 extra_params: dict[str, str],
                 response_markup: str = "html5lib") -> BeautifulSoup:

@@ -3,7 +3,7 @@
 """
 import datetime
 import re
-from typing import Dict, List, Literal, Optional
+from typing import Dict, List, Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -114,8 +114,7 @@ class UnipaRequestUrl:
 
     フォームのaction属性を取得し更新する。システムによって違うかもしれないので
     """
-    KEYS = Literal['TOP', 'BULLETBOARD', 'SITEMAP']
-    __urls: Dict[KEYS, Optional[str]] = {
+    __urls: Dict[str, Optional[str]] = {
         "TOP": None,
         "BULLETBOARD": None,
         "SITEMAP": None,
@@ -132,7 +131,7 @@ class UnipaRequestUrl:
         self.__base_url = base_url
 
     def get(self,
-            name: KEYS) -> Optional[str]:
+            name: str) -> Optional[str]:
         """
         UnipaRequestUrl の値 (URL) を取得する
 
@@ -151,7 +150,7 @@ class UnipaRequestUrl:
         return urljoin(self.__base_url, self.__urls[name])
 
     def set(self,
-            name: KEYS,
+            name: str,
             soup: BeautifulSoup) -> None:
         """
         BeautifulSoup から UnipaRequestUrl の値 (URL) を設定する
