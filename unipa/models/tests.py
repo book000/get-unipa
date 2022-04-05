@@ -18,6 +18,9 @@ class ConfigJsonModel:
     username: str
     password: str
 
+    def __init__(self) -> None:
+        pass
+
 
 @dataclass_json
 @dataclass
@@ -34,6 +37,9 @@ class BulletinBoardGetAllModel:
     is_flag: bool
     is_unread: bool
 
+    def __init__(self) -> None:
+        pass
+
 
 @dataclass_json
 @dataclass
@@ -43,6 +49,9 @@ class PublicationPeriodModel:
     """
     start_date: str
     end_date: str
+
+    def __init__(self) -> None:
+        pass
 
 
 @dataclass_json
@@ -57,6 +66,9 @@ class BulletinBoardGetDetailsModel:
     content_html: str
     publication_period: PublicationPeriodModel
 
+    def __init__(self) -> None:
+        pass
+
 
 @dataclass_json
 @dataclass
@@ -66,3 +78,6 @@ class TestsJsonModel:
     """
     bulletinboard_get_all: List[BulletinBoardGetAllModel]
     bulletinboard_get_details: List[BulletinBoardGetDetailsModel]
+
+    def __init__(self) -> None:
+        pass

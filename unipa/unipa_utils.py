@@ -114,7 +114,7 @@ class UnipaRequestUrl:
 
     フォームのaction属性を取得し更新する。システムによって違うかもしれないので
     """
-    KEYS = Literal["TOP", "BULLETBOARD", "SITEMAP"]
+    KEYS = Literal['TOP', 'BULLETBOARD', 'SITEMAP']
     __urls: Dict[KEYS, Optional[str]] = {
         "TOP": None,
         "BULLETBOARD": None,
@@ -171,6 +171,9 @@ class UnipaUtils:
     """
     ユーティリティ
     """
+
+    def __init__(self) -> None:
+        pass
 
     @classmethod
     def get_nav_items(cls,
@@ -246,5 +249,5 @@ class UnipaUtils:
             return None
         datetime_str = re.sub(r"\(.+?\)", "", datetime_str)
         datetime_format = "%Y/%m/%d %H:%M %z"
-        JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
-        return datetime.datetime.strptime(datetime_str + " +0900", datetime_format).astimezone(JST)
+        jst = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
+        return datetime.datetime.strptime(datetime_str + " +0900", datetime_format).astimezone(jst)
