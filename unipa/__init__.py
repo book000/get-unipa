@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from requests import Response
 
 from unipa.errors import UnipaInternalError, UnipaLoginError, UnipaNotLoggedIn
-from unipa.unipa_utils import UnipaNavItem, UnipaUtils
+from unipa.unipa_utils import UnipaNavItem, UnipaRequestUrl, UnipaUtils
 
 
 class UnipaToken:
@@ -117,7 +117,7 @@ class Unipa:
         self.__token: Optional[UnipaToken] = None
         self.__nav_items: List[UnipaNavItem] = []
 
-        self.__request_url: Optional[str] = None
+        self.request_url: UnipaRequestUrl = UnipaRequestUrl(base_url)
 
     def login(self,
               username: str,
@@ -192,14 +192,11 @@ class Unipa:
             raise UnipaLoginError(error_details.text)
 
         self.__logged_in = True
-        self.update_token(soup)
+        self.update_token_html5lib(soup)
 
-        utils = UnipaUtils()
-        self.__nav_items = utils.get_nav_items(soup)
+        self.__nav_items = UnipaUtils.get_nav_items(soup)
 
-        header_form = soup.find("form", {"id": "headerForm"})
-        self.__request_url = urljoin(self.__base_url, header_form.get("action"))
-
+        self.request_url.set("TOP", soup)
         return True
 
     def request_from_menu(self,
@@ -213,16 +210,17 @@ class Unipa:
         Returns:
             Response: レスポンス
         """
-        if not self.__logged_in or self.__request_url is None or self.__token is None:
+        if not self.__logged_in or self.request_url.get("TOP") is None or self.__token is None:
             raise UnipaNotLoggedIn()
 
-        return self.request("menuForm", {
+        return self.request("TOP", "menuForm", {
             "menuForm:mainMenu": "menuForm:mainMenu",
             "rx.sync.source": "menuForm:mainMenu",
             "menuForm:mainMenu_menuid": str(menu_item.menu_id),
         })
 
     def request(self,
+                request_target: UnipaRequestUrl.KEYS,
                 request_type: str,
                 extra_params: dict[str, str],
                 response_markup: str = "html5lib") -> BeautifulSoup:
@@ -230,6 +228,7 @@ class Unipa:
         リクエストを送信する
 
         Args:
+            request_target: リクエストターゲット
             request_type: リクエストタイプ (menuForm, funcForm など)
             extra_params: リクエストに付加するパラメータ (トークンなど以外)
             response_markup: レスポンスのマークアップ
@@ -237,7 +236,7 @@ class Unipa:
         Returns:
             Response: レスポンス
         """
-        if not self.__logged_in or self.__request_url is None or self.__token is None:
+        if not self.__logged_in or self.request_url.get("TOP") is None or self.__token is None:
             raise UnipaNotLoggedIn()
 
         params = {
@@ -254,20 +253,29 @@ class Unipa:
             "Content-Type": "application/x-www-form-urlencoded",
         }
         if response_markup == "lxml":
-            headers["Accept"] = "application/xml"
+            headers["Accept"] = "text/html"
+        if response_markup == "lxml":
+            headers["Accept"] = "application/xml,text/xml"
             headers["Faces-Request"] = "partial/ajax"
             headers["X-Requested-With"] = "XMLHttpRequest"
 
-        self.__response = self.session.post(self.__request_url, data=params, headers=headers)
+        url = self.request_url.get(request_target)
+        if url is None:
+            raise UnipaInternalError("リクエストターゲットが見つかりません: " + request_target)
+
+        self.__response = self.session.post(url, data=params, headers=headers)
 
         if self.__response.status_code != 200:
+            self.logger.debug("レスポンス: %s", self.__response.text)
             raise UnipaInternalError("リクエストに失敗しました。(" + str(self.__response.status_code) + ")")
 
         soup = BeautifulSoup(self.__response.text, response_markup)
         self.logger.debug("soupレスポンス: %s", soup.prettify())
 
         if response_markup == "html5lib":
-            self.update_token(soup)
+            self.update_token_html5lib(soup)
+
+        # xmlのときに更新するかは検討
 
         return soup
 
@@ -307,8 +315,8 @@ class Unipa:
         """
         return self.__response
 
-    def update_token(self,
-                     soup: BeautifulSoup) -> None:
+    def update_token_html5lib(self,
+                              soup: BeautifulSoup) -> None:
         """
         トークンをアップデートします。
         """

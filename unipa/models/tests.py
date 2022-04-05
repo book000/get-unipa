@@ -37,8 +37,32 @@ class BulletinBoardGetAllModel:
 
 @dataclass_json
 @dataclass
+class PublicationPeriodModel:
+    """
+    公開期間モデル
+    """
+    start_date: str
+    end_date: str
+
+
+@dataclass_json
+@dataclass
+class BulletinBoardGetDetailsModel:
+    """
+    掲示詳細取得テストモデル
+    """
+    title: str
+    author: str
+    category: str
+    content_html: str
+    publication_period: PublicationPeriodModel
+
+
+@dataclass_json
+@dataclass
 class TestsJsonModel:
     """
     テスト用JSONモデル
     """
     bulletinboard_get_all: List[BulletinBoardGetAllModel]
+    bulletinboard_get_details: List[BulletinBoardGetDetailsModel]

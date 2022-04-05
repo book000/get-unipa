@@ -5,8 +5,8 @@ import re
 from typing import List, Optional
 
 from unipa import Unipa
+from unipa.BulletinBoard.BulletinBoard import UnipaBulletinBoardItem
 from unipa.errors import UnipaInternalError, UnipaNotLoggedIn
-from unipa.models.BulletinBoard import BulletinBoardItem
 
 
 class UnipaBulletinBoard:
@@ -22,12 +22,12 @@ class UnipaBulletinBoard:
         self.unipa = unipa
         self.logger = unipa.logger
 
-    def get_all(self) -> List[BulletinBoardItem]:
+    def get_all(self) -> List[UnipaBulletinBoardItem]:
         """
         掲示リストを取得します。
 
         Returns:
-            List[BulletinBoardItem]: 掲示リスト
+            List[UnipaBulletinBoardItem]: 掲示リスト
         """
 
         if not self.unipa.is_logged_in():
@@ -39,6 +39,7 @@ class UnipaBulletinBoard:
         self.logger.debug(f"BulletinBoard/menu_id: {menu_id}")
 
         soup = self.unipa.request_from_menu(nav_item)
+        self.unipa.request_url.set("BULLETBOARD", soup)
 
         if soup.find("div", {"class": "ui-tabs-panels"}) is None:
             raise UnipaInternalError("掲示板パネルが見つかりませんでした。")
@@ -76,7 +77,7 @@ class UnipaBulletinBoard:
             unread_id = unread_input.get("id")
             is_unread = unread_input.get("checked") is not None
 
-            items.append(BulletinBoardItem(
+            items.append(UnipaBulletinBoardItem(
                 title,
                 target_s,
                 target_p,

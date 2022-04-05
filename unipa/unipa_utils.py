@@ -1,8 +1,10 @@
 """
 ユーティリティ
 """
+import datetime
 import re
-from typing import List, Optional
+from typing import Dict, List, Literal, Optional
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
@@ -106,12 +108,72 @@ class UnipaNavItem:
         return f"UnipaNavItem(_menu={self._menu}, _name={self._name}, __menu_id={self._menu_id})"
 
 
+class UnipaRequestUrl:
+    """
+    リクエスト URL の列挙
+
+    フォームのaction属性を取得し更新する。システムによって違うかもしれないので
+    """
+    KEYS = Literal["TOP", "BULLETBOARD", "SITEMAP"]
+    __urls: Dict[KEYS, Optional[str]] = {
+        "TOP": None,
+        "BULLETBOARD": None,
+        "SITEMAP": None,
+    }
+
+    def __init__(self,
+                 base_url: str):
+        """
+        UnipaRequestUrl コンストラクタ
+
+        Args:
+            base_url: ベース URL
+        """
+        self.__base_url = base_url
+
+    def get(self,
+            name: KEYS) -> Optional[str]:
+        """
+        UnipaRequestUrl の値 (URL) を取得する
+
+        Args:
+            name: UnipaRequestUrl の名前
+
+        Returns:
+            Optional[str]: UnipaRequestUrl の値 (URL)
+        """
+        if name not in self.__urls:
+            raise UnipaInternalError(f"{name} is undefined")
+
+        if self.__urls[name] is None:
+            return None
+
+        return urljoin(self.__base_url, self.__urls[name])
+
+    def set(self,
+            name: KEYS,
+            soup: BeautifulSoup) -> None:
+        """
+        BeautifulSoup から UnipaRequestUrl の値 (URL) を設定する
+
+        Args:
+            name: UnipaRequestUrl の名前
+            soup: BeautifulSoup
+        """
+        if name not in self.__urls:
+            raise UnipaInternalError(f"{name} is undefined")
+
+        header_form = soup.find("form", {"id": "headerForm"})
+        self.__urls[name] = header_form.get("action")
+
+
 class UnipaUtils:
     """
     ユーティリティ
     """
 
-    def get_nav_items(self,
+    @classmethod
+    def get_nav_items(cls,
                       soup: BeautifulSoup) -> List[UnipaNavItem]:
         """
         ナビゲーションアイテムを取得する
@@ -146,7 +208,7 @@ class UnipaUtils:
                             sub_name=submenu_name.text
                         ),
                         name=submenu_item.find("span", {"class": "ui-menuitem-text"}).text,
-                        menu_id=self.get_menuid(pfconfirmcommand)
+                        menu_id=cls.get_menuid(pfconfirmcommand)
                     ))
 
         return items
@@ -168,3 +230,21 @@ class UnipaUtils:
             return None
 
         return match.group(1)
+
+    @staticmethod
+    def process_datetime(datetime_str: Optional[str]) -> Optional[datetime.datetime]:
+        """
+        UNIPA の日時テキスト(YYYY/MM/DD HH:MM)から datetime.datetime に変換する
+
+        Args:
+            datetime_str: UNIPA の日時テキスト
+
+        Returns:
+            Optional[datetime.datetime]: 変換後の datetime.datetime
+        """
+        if datetime_str is None or datetime_str == "":
+            return None
+        datetime_str = re.sub(r"\(.+?\)", "", datetime_str)
+        datetime_format = "%Y/%m/%d %H:%M %z"
+        JST = datetime.timezone(datetime.timedelta(hours=+9), 'JST')
+        return datetime.datetime.strptime(datetime_str + " +0900", datetime_format).astimezone(JST)

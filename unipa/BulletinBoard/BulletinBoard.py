@@ -1,17 +1,12 @@
 """
 掲示板
 """
-from unipa import Unipa
+from unipa import Unipa, UnipaUtils
+from unipa.BulletinBoard.BulletinBoardItemDetails import UnipaBulletinBoardItemDetails
+from unipa.BulletinBoard.PublicationPeriod import UnipaPublicationPeriod
 
 
-class BulletinBoardItemDetails:
-    """
-    掲示板の掲示アイテム 詳細情報
-    """
-    pass
-
-
-class BulletinBoardItem:
+class UnipaBulletinBoardItem:
     """
     掲示板の掲示アイテム
     """
@@ -128,65 +123,82 @@ class BulletinBoardItem:
         return self._is_unread
 
     def get_details(self,
-                    unipa: Unipa) -> BulletinBoardItemDetails:
+                    unipa: Unipa) -> UnipaBulletinBoardItemDetails:
         """
         掲示アイテムの詳細を取得します。
 
         Returns:
-            BulletinBoardItemDetails: 掲示アイテムの詳細
+            UnipaBulletinBoardItemDetails: 掲示アイテムの詳細
         """
-        soup = unipa.request("funcForm", {
+        soup = unipa.request("BULLETBOARD", "funcForm", {
+            # "javax.faces.partial.ajax": "true",
+            "javax.faces.source": self.target_s,
             "javax.faces.partial.execute": self.target_s,
+            "funcForm:tabArea_activeIndex": "1",
             self.target_s: self.target_p
-        })
+        }, "html5lib")
 
-        return BulletinBoardItemDetails()
+        outputpanel = soup.select_one("div.ui-outputpanel")
+        if outputpanel is None:
+            raise RuntimeError("掲示板の詳細パネルが見つかりません。")
+
+        table = outputpanel.select_one("table.singleTable")
+        data = {}
+        for tr in table.find_all("tr"):
+            tds = tr.find_all("td")
+            if len(tds) != 2:
+                continue
+
+            row_key = tds[0]
+            row_value = tds[1]
+
+            # print(row_key.text, row_value.text)
+            data[row_key.text.strip()] = row_value
+
+        raw_publication_period = data["掲示期間"]
+        raw_start_date: str = raw_publication_period.find_all("span")[0].text.strip()
+        raw_end_date = raw_publication_period.find_all("span")[2].text.strip()
+
+        start_date = UnipaUtils.process_datetime(raw_start_date)
+        end_date = UnipaUtils.process_datetime(raw_end_date)
+
+        publication_period = UnipaPublicationPeriod(start_date, end_date)
+
+        return UnipaBulletinBoardItemDetails(
+            title=data["件名"].text.strip(),
+            author=data["差出人"].text.strip(),
+            category=data["カテゴリ"].text.strip(),
+            content_html=str(data["本文"]),
+            publication_period=publication_period,
+        )
 
     def mark_read(self,
                   unipa: Unipa) -> None:
         """
         既読にする
         """
-        soup = unipa.request("funcForm", {
-            "javax.faces.partial.ajax": "true",
-            "javax.faces.source": self.target_s,
-            "javax.faces.partial.execute": self.target_s,
-            "javax.faces.partial.render": "funcForm:tabArea",
-            "javax.faces.behavior.event": "change",
-            "javax.faces.partial.event": "change",
-        }, "lxml")
-        pass  # TODO
+        raise NotImplementedError("未実装です。")  # TODO
 
     def mark_unread(self,
                     unipa: Unipa) -> None:
         """
         未読にする
         """
-        soup = unipa.request("funcForm", {
-            "javax.faces.partial.ajax": "true",
-            "javax.faces.source": self.target_s,
-            "javax.faces.partial.execute": self.target_s,
-            "javax.faces.partial.render": "funcForm:tabArea",
-            "javax.faces.behavior.event": "change",
-            "javax.faces.partial.event": "change",
-            "funcForm:tabArea_activeIndex": "1",
-            self.unread_id: "on"
-        }, "lxml")
-        pass  # TODO
+        raise NotImplementedError("未実装です。")  # TODO
 
     def mark_flag(self,
                   unipa: Unipa) -> None:
         """
         フラグをつける
         """
-        pass  # TODO
+        raise NotImplementedError("未実装です。")  # TODO
 
     def mark_unflag(self,
                     unipa: Unipa) -> None:
         """
         フラグをはずす
         """
-        pass  # TODO
+        raise NotImplementedError("未実装です。")  # TODO
 
     def __str__(self) -> str:
         return f"BulletinBoardItem(title={self.title}, target_s={self.target_s}, target_p={self.target_p}, is_attention={self.is_attention}, is_flag={self.is_flag}, is_unread={self.is_unread})"
