@@ -12,6 +12,7 @@ class UnipaBulletinBoardItem:
     """
 
     def __init__(self,
+                 item_id: str,
                  title: str,
                  target_s: str,
                  target_p: str,
@@ -24,6 +25,7 @@ class UnipaBulletinBoardItem:
         掲示板の掲示アイテム コンストラクタ
 
         Args:
+            item_id: 掲示アイテム ID (恒久的なIDか不明。要検証)
             title: 掲示タイトル
             target_s: 掲示 s 値 (リクエスト用)
             target_p: 掲示 p 値 (リクエスト用)
@@ -33,6 +35,7 @@ class UnipaBulletinBoardItem:
             is_flag: フラグ (ユーザーが設定可能)
             is_unread: 未読か (ユーザーが設定可能)
         """
+        self._item_id = item_id
         self._title = title
         self._target_s = target_s
         self._target_p = target_p
@@ -41,6 +44,16 @@ class UnipaBulletinBoardItem:
         self._is_attention = is_attention
         self._is_flag = is_flag
         self._is_unread = is_unread
+
+    @property
+    def item_id(self) -> str:
+        """
+        掲示アイテム ID
+
+        Returns:
+            str: 掲示アイテム ID
+        """
+        return self._item_id
 
     @property
     def title(self) -> str:
@@ -131,7 +144,6 @@ class UnipaBulletinBoardItem:
             UnipaBulletinBoardItemDetails: 掲示アイテムの詳細
         """
         soup = unipa.request("BULLETBOARD", "funcForm", {
-            # "javax.faces.partial.ajax": "true",
             "javax.faces.source": self.target_s,
             "javax.faces.partial.execute": self.target_s,
             "funcForm:tabArea_activeIndex": "1",
@@ -165,6 +177,7 @@ class UnipaBulletinBoardItem:
         publication_period = UnipaPublicationPeriod(start_date, end_date)
 
         return UnipaBulletinBoardItemDetails(
+            item_id=self.item_id,
             title=data["件名"].text.strip(),
             author=data["差出人"].text.strip(),
             category=data["カテゴリ"].text.strip(),

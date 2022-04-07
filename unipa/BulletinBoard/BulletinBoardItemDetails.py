@@ -13,6 +13,7 @@ class UnipaBulletinBoardItemDetails:
     """
 
     def __init__(self,
+                 item_id: str,
                  title: str,
                  author: str,
                  category: str,
@@ -22,17 +23,29 @@ class UnipaBulletinBoardItemDetails:
         コンストラクタ
 
         Args:
+            item_id: 掲示 ID
             title: 掲示タイトル
             author: 差出人
             category: カテゴリ
             content_html: コンテンツ HTML
             publication_period: 公開期間
         """
+        self._item_id = item_id
         self._title = title
         self._author = author
         self._category = category
         self._content_html = content_html
         self._publication_period = publication_period
+
+    @property
+    def item_id(self) -> str:
+        """
+        掲示 ID
+
+        Returns:
+            str: 掲示 ID
+        """
+        return self._item_id
 
     @property
     def title(self) -> str:

@@ -57,6 +57,7 @@ class UnipaBulletinBoard:
         # div.ui-scrollpanel > div.alignRight
         for item in panel.select("div.ui-scrollpanel > div.alignRight"):
             a_tag = item.find("a")
+            item_id = a_tag.get("id")
             title = a_tag.text
             onclick = a_tag.get("onclick")
             [target_s, target_p] = self.get_target_sp(onclick)  # idを拾ってもいい
@@ -78,6 +79,7 @@ class UnipaBulletinBoard:
             is_unread = unread_input.get("checked") is not None
 
             items.append(UnipaBulletinBoardItem(
+                item_id,
                 title,
                 target_s,
                 target_p,
