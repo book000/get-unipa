@@ -61,6 +61,7 @@ class GenerateTestData:
 
         for item in bulletinboard_items:
             ret.append(BulletinBoardGetAllModel(
+                item_id=item.item_id,
                 title=item.title,
                 target_s=item.target_s,
                 target_p=item.target_p,
@@ -84,6 +85,7 @@ class GenerateTestData:
         for item in bulletinboard_items:
             details = item.get_details(self.unipa)
             ret.append(BulletinBoardGetDetailsModel(
+                item_id=item.item_id,
                 title=details.title,
                 author=details.author,
                 category=details.category,
