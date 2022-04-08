@@ -93,7 +93,7 @@ class GenerateTestData:
                 publication_period=PublicationPeriodModel(
                     start_date=self.datetime2str(details.publication_period.start_date),
                     end_date=self.datetime2str(details.publication_period.end_date),
-                )
+                ),
             ))
 
         return ret

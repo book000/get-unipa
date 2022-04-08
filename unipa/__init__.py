@@ -200,24 +200,31 @@ class Unipa:
         return True
 
     def request_from_menu(self,
-                          menu_item: UnipaNavItem) -> BeautifulSoup:
+                          menu_item: UnipaNavItem,
+                          extra_params: dict[str, str] = None) -> BeautifulSoup:
         """
         メニューからリクエストを送信する
 
         Args:
             menu_item: メニューアイテム
+            extra_params: リクエストに付加するパラメータ (トークンなど以外)
 
         Returns:
             Response: レスポンス
         """
+        if extra_params is None:
+            extra_params = {}
+
         if not self.__logged_in or self.request_url.get("TOP") is None or self.__token is None:
             raise UnipaNotLoggedIn()
 
-        return self.request("TOP", "menuForm", {
+        params = {
             "menuForm:mainMenu": "menuForm:mainMenu",
             "rx.sync.source": "menuForm:mainMenu",
             "menuForm:mainMenu_menuid": str(menu_item.menu_id),
-        })
+        }
+        params.update(extra_params)
+        return self.request("TOP", "menuForm", params)
 
     def request(self,
                 request_target: str,
