@@ -1,1 +1,141 @@
-{"version":"3","listProblem":[]}
+{"version":"3","listProblem":[{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Class has no `__init__` method",
+  "severity": "Moderate",
+  "comment": "Class has no __init__ method",
+  "detailsInfo": "Reports cases in Python 2 when a class has no `__init__` method, neither its parent\nclasses.\n\n**Example:**\n\n```\nclass Book():\n    pass\n```\n\nThe quick-fix adds the `__init__` method:\n\n```\nclass Book():\n    def __init__(self):\n        pass\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "unipa/models/tests.py",
+      "language": "Python",
+      "line": 14,
+      "offset": 7,
+      "length": 15,
+      "code": {
+        "startLine": 12,
+        "length": 15,
+        "offset": 49,
+        "surroundingCode": "@dataclass\n# noinspection PyClassHasNoInit\nclass ConfigJsonModel:\n    \"\"\"\n    設定JSONモデル"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyClassHasNoInitInspection"
+  },
+  "hash": "8e9b2cf05d4579fcb61b70f4bebc14a1ce3ca04a1dc1e01996cc8b2e861c3bb7"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Class has no `__init__` method",
+  "severity": "Moderate",
+  "comment": "Class has no __init__ method",
+  "detailsInfo": "Reports cases in Python 2 when a class has no `__init__` method, neither its parent\nclasses.\n\n**Example:**\n\n```\nclass Book():\n    pass\n```\n\nThe quick-fix adds the `__init__` method:\n\n```\nclass Book():\n    def __init__(self):\n        pass\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "unipa/models/tests.py",
+      "language": "Python",
+      "line": 26,
+      "offset": 7,
+      "length": 24,
+      "code": {
+        "startLine": 24,
+        "length": 24,
+        "offset": 49,
+        "surroundingCode": "@dataclass\n# noinspection PyClassHasNoInit\nclass BulletinBoardGetAllModel:\n    \"\"\"\n    掲示板リスト取得テストモデル"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyClassHasNoInitInspection"
+  },
+  "hash": "5196a7ceb7f1efb8b9d96d9ddf26f3b2035c951cf1a1dea68c1cfb7bcce0aab1"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Class has no `__init__` method",
+  "severity": "Moderate",
+  "comment": "Class has no __init__ method",
+  "detailsInfo": "Reports cases in Python 2 when a class has no `__init__` method, neither its parent\nclasses.\n\n**Example:**\n\n```\nclass Book():\n    pass\n```\n\nThe quick-fix adds the `__init__` method:\n\n```\nclass Book():\n    def __init__(self):\n        pass\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "unipa/models/tests.py",
+      "language": "Python",
+      "line": 44,
+      "offset": 7,
+      "length": 22,
+      "code": {
+        "startLine": 42,
+        "length": 22,
+        "offset": 49,
+        "surroundingCode": "@dataclass\n# noinspection PyClassHasNoInit\nclass PublicationPeriodModel:\n    \"\"\"\n    公開期間モデル"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyClassHasNoInitInspection"
+  },
+  "hash": "ca93e3bd36a836f5ab2c49a3f5c0e594d8cf0a68e6ecea9de439797cc942eacd"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Class has no `__init__` method",
+  "severity": "Moderate",
+  "comment": "Class has no __init__ method",
+  "detailsInfo": "Reports cases in Python 2 when a class has no `__init__` method, neither its parent\nclasses.\n\n**Example:**\n\n```\nclass Book():\n    pass\n```\n\nThe quick-fix adds the `__init__` method:\n\n```\nclass Book():\n    def __init__(self):\n        pass\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "unipa/models/tests.py",
+      "language": "Python",
+      "line": 55,
+      "offset": 7,
+      "length": 28,
+      "code": {
+        "startLine": 53,
+        "length": 28,
+        "offset": 49,
+        "surroundingCode": "@dataclass\n# noinspection PyClassHasNoInit\nclass BulletinBoardGetDetailsModel:\n    \"\"\"\n    掲示詳細取得テストモデル"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyClassHasNoInitInspection"
+  },
+  "hash": "28435d001f10f0c7f6fa265899e5064764874cc3e604b97e56dd19489789d737"
+},{
+  "tool": "Code Inspection",
+  "category": "Python",
+  "type": "Class has no `__init__` method",
+  "severity": "Moderate",
+  "comment": "Class has no __init__ method",
+  "detailsInfo": "Reports cases in Python 2 when a class has no `__init__` method, neither its parent\nclasses.\n\n**Example:**\n\n```\nclass Book():\n    pass\n```\n\nThe quick-fix adds the `__init__` method:\n\n```\nclass Book():\n    def __init__(self):\n        pass\n```",
+  "sources": [
+    {
+      "type": "file",
+      "path": "unipa/models/tests.py",
+      "language": "Python",
+      "line": 70,
+      "offset": 7,
+      "length": 14,
+      "code": {
+        "startLine": 68,
+        "length": 14,
+        "offset": 49,
+        "surroundingCode": "@dataclass\n# noinspection PyClassHasNoInit\nclass TestsJsonModel:\n    \"\"\"\n    テスト用JSONモデル"
+      }
+    }
+  ],
+  "attributes": {
+    "module": "project",
+    "inspectionName": "PyClassHasNoInitInspection"
+  },
+  "hash": "d13ae01e754b54626134213da716f90e22cb05dd2052984d3c441cba91016c35"
+}]}
