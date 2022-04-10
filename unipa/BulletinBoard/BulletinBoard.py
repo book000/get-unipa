@@ -25,7 +25,7 @@ class UnipaBulletinBoardItem:
         掲示板の掲示アイテム コンストラクタ
 
         Args:
-            item_id: 掲示アイテム ID (恒久的なIDか不明。要検証)
+            item_id: 掲示 ID (恒久的なIDではないことに注意)
             title: 掲示タイトル
             target_s: 掲示 s 値 (リクエスト用)
             target_p: 掲示 p 値 (リクエスト用)
@@ -48,10 +48,14 @@ class UnipaBulletinBoardItem:
     @property
     def item_id(self) -> str:
         """
-        掲示アイテム ID
+        掲示 ID
 
         Returns:
-            str: 掲示アイテム ID
+            str: 掲示 ID
+
+        Notes:
+            この ID は恒久的な ID ではなく、掲示表示順番のみで ID が振られているようです。<br>
+            <b>掲示内容の変化検知など、掲示が合致するかどうかのチェックには用いないでください</b>
         """
         return self._item_id
 

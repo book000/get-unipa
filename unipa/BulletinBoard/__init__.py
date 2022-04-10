@@ -38,7 +38,9 @@ class UnipaBulletinBoard:
 
         self.logger.debug(f"BulletinBoard/menu_id: {menu_id}")
 
-        soup = self.unipa.request_from_menu(nav_item)
+        soup = self.unipa.request_from_menu(nav_item, {
+            "javax.faces.partial.execute": "@all"
+        })
         self.unipa.request_url.set("BULLETBOARD", soup)
 
         if soup.find("div", {"class": "ui-tabs-panels"}) is None:

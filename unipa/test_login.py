@@ -65,19 +65,30 @@ class TestUnipa(TestCase):
         for test in self.tests.bulletinboard_get_all:
             self.logger.info("掲示リスト取得テスト: タイトル「%s」", test.title)
 
-            matches = list(filter(lambda item: item.item_id == test.item_id, self.bulletinboard_items))
-            self.assertNotEqual(len(matches), 0, "item_id「%s」に該当する掲示が見つかりませんでした。" % test.item_id)
+            target = None
+            target_match = 0
+            for match in self.bulletinboard_items:
+                results = [
+                    match.title == test.title,
+                    match.flag_id == test.flag_id,
+                    match.unread_id == test.unread_id,
+                    match.is_attention == test.is_attention,
+                    match.is_flag == test.is_flag,
+                    match.is_unread == test.is_unread,
+                ]
+                if len(list(filter(lambda result: result is True, results))) > target_match:
+                    target = match
+                    target_match = len(list(filter(lambda result: result is True, results)))
 
-            match = matches[0]
-            self.assertEqual(match.item_id, test.item_id, "IDが一致しません")
-            self.assertEqual(match.title, test.title, "タイトルが一致しません")
-            self.assertEqual(match.target_s, test.target_s, "target_sが一致しません")
-            self.assertEqual(match.target_p, test.target_p, "target_pが一致しません")
-            self.assertEqual(match.flag_id, test.flag_id, "flag_idが一致しません")
-            self.assertEqual(match.unread_id, test.unread_id, "unread_idが一致しません")
-            self.assertEqual(match.is_attention, test.is_attention, "is_attentionが一致しません")
-            self.assertEqual(match.is_flag, test.is_flag, "is_flagが一致しません")
-            self.assertEqual(match.is_unread, test.is_unread, "is_unreadが一致しません")
+            if target is None:
+                self.fail("掲示リストに該当する掲示が見つかりませんでした。")
+
+            self.assertEqual(target.title, test.title, "タイトルが一致しません")
+            self.assertEqual(target.flag_id, test.flag_id, "flag_idが一致しません")
+            self.assertEqual(target.unread_id, test.unread_id, "unread_idが一致しません")
+            self.assertEqual(target.is_attention, test.is_attention, "is_attentionが一致しません")
+            self.assertEqual(target.is_flag, test.is_flag, "is_flagが一致しません")
+            self.assertEqual(target.is_unread, test.is_unread, "is_unreadが一致しません")
 
     def test_bulletinboard_get_details(self) -> None:
         """
@@ -86,19 +97,35 @@ class TestUnipa(TestCase):
         for test in self.tests.bulletinboard_get_details:
             self.logger.info("掲示板 掲示詳細の取得テスト: 掲示タイトル「%s」", test.title)
 
-            matches = list(filter(lambda item: item.item_id == test.item_id, self.bulletinboard_items))
-            self.assertNotEqual(len(matches), 0, "item_id「%s」に該当する掲示が見つかりませんでした。" % test.item_id)
+            target = None
+            target_match = 0
+            for match in self.bulletinboard_items:
+                details = match.get_details(self.unipa)
+                results = [
+                    details.title == test.title,
+                    details.author == test.author,
+                    details.category == test.category,
+                    details.content_html == test.content_html,
+                    details.publication_period.start_date == UnipaUtils.process_datetime(
+                        test.publication_period.start_date),
+                    details.publication_period.end_date == UnipaUtils.process_datetime(
+                        test.publication_period.end_date),
+                ]
+                if len(list(filter(lambda result: result is True, results))) > target_match:
+                    target = details
+                    target_match = len(list(filter(lambda result: result is True, results)))
 
-            details = matches[0].get_details(self.unipa)
+            if target is None:
+                self.fail("掲示リストに該当する掲示が見つかりませんでした。")
 
-            self.assertEqual(details.item_id, test.item_id, "IDが一致しません")
-            self.assertEqual(details.title, test.title, "タイトルが一致しません")
-            self.assertEqual(details.author, test.author, "authorが一致しません")
-            self.assertEqual(details.category, test.category, "categoryが一致しません")
-            self.assertEqual(details.content_html, test.content_html, "content_htmlが一致しません")
-            self.assertEqual(details.publication_period.start_date,
+            self.assertEqual(target.item_id, test.item_id, "IDが一致しません")
+            self.assertEqual(target.title, test.title, "タイトルが一致しません")
+            self.assertEqual(target.author, test.author, "authorが一致しません")
+            self.assertEqual(target.category, test.category, "categoryが一致しません")
+            self.assertEqual(target.content_html, test.content_html, "content_htmlが一致しません")
+            self.assertEqual(target.publication_period.start_date,
                              UnipaUtils.process_datetime(test.publication_period.start_date),
                              "publication_period.start_dateが一致しません")
-            self.assertEqual(details.publication_period.end_date,
+            self.assertEqual(target.publication_period.end_date,
                              UnipaUtils.process_datetime(test.publication_period.end_date),
                              "publication_period.end_dateが一致しません")

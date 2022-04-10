@@ -23,7 +23,7 @@ class UnipaBulletinBoardItemDetails:
         コンストラクタ
 
         Args:
-            item_id: 掲示 ID
+            item_id: 掲示 ID (恒久的なIDではないことに注意)
             title: 掲示タイトル
             author: 差出人
             category: カテゴリ
@@ -44,6 +44,10 @@ class UnipaBulletinBoardItemDetails:
 
         Returns:
             str: 掲示 ID
+
+        Notes:
+            この ID は恒久的な ID ではなく、掲示表示順番のみで ID が振られているようです。<br>
+            <b>掲示内容の変化検知など、掲示が合致するかどうかのチェックには用いないでください</b>
         """
         return self._item_id
 
