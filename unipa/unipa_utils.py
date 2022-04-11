@@ -108,6 +108,48 @@ class UnipaNavItem:
         return f"UnipaNavItem(_menu={self._menu}, _name={self._name}, __menu_id={self._menu_id})"
 
 
+class UnipaInfoItem:
+    """
+    トップインフォメーションアイテム
+    """
+
+    def __init__(self,
+                 name: str,
+                 item_id: str):
+        """
+        トップインフォメーションアイテム コンストラクタ
+
+        Args:
+            name: アイテム名
+            item_id: アイテム ID
+        """
+        self._name = name
+        self._item_id = item_id
+
+    @property
+    def name(self) -> str:
+        """
+        アイテム名
+
+        Returns:
+            str: アイテム名
+        """
+        return self._name
+
+    @property
+    def menu_id(self) -> str:
+        """
+        アイテム ID
+
+        Returns:
+            str: アイテム ID
+        """
+        return self._item_id
+
+    def __str__(self) -> str:
+        return f"UnipaInfoItem(_name={self._name}, _item_id={self._item_id})"
+
+
 class UnipaRequestUrl:
     """
     リクエスト URL の列挙
@@ -212,6 +254,41 @@ class UnipaUtils:
                         name=submenu_item.find("span", {"class": "ui-menuitem-text"}).text,
                         menu_id=cls.get_menuid(pfconfirmcommand)
                     ))
+
+        return items
+
+    @classmethod
+    def get_info_items(cls,
+                       soup: BeautifulSoup) -> List[UnipaInfoItem]:
+        """
+        インフォメーションアイテムを取得する
+
+        Args:
+            soup: BeautifulSoup
+
+        Returns:
+            List[UnipaInfoItem]: インフォメーションアイテム
+        """
+        info_detail = soup.select_one("#portalCont .infoDetail")  #
+        if info_detail is None:
+            raise UnipaInternalError("ポータルコンテナ/インフォメーションが見つかりません")
+
+        info_items = info_detail.select("div.ui-panel-content")
+
+        with open("hoge.html", "w") as f:
+            f.write(str(info_items))
+
+        items = []
+        for info_item in info_items:
+            title = info_item.find("span", {"class": "span"}).text
+            item_id = info_item.select_one("a.ui-commandlink").get("id")
+
+            print(title, item_id)
+
+            items.append(UnipaInfoItem(
+                name=title,
+                item_id=item_id
+            ))
 
         return items
 
