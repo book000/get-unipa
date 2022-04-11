@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from requests import Response
 
 from unipa.errors import UnipaInternalError, UnipaLoginError, UnipaNotLoggedIn
-from unipa.unipa_utils import UnipaNavItem, UnipaRequestUrl, UnipaUtils
+from unipa.unipa_utils import UnipaInfoItem, UnipaNavItem, UnipaRequestUrl, UnipaUtils
 
 
 class UnipaToken:
@@ -116,6 +116,7 @@ class Unipa:
 
         self.__token: Optional[UnipaToken] = None
         self.__nav_items: List[UnipaNavItem] = []
+        self.__info_items: List[UnipaInfoItem] = []
 
         self.request_url: UnipaRequestUrl = UnipaRequestUrl(base_url)
 
@@ -136,9 +137,6 @@ class Unipa:
         self.__response = self.session.get(self.__base_url)
         if self.__response.status_code != 200:
             raise UnipaInternalError("ログインページの取得に失敗しました。")
-
-        with open("hoge.html", "w", encoding="utf-8") as f:
-            f.write(self.__response.text)
 
         soup = BeautifulSoup(self.__response.text, "html5lib")
         login_form = soup.find("form", {"id": "loginForm"})
@@ -194,7 +192,16 @@ class Unipa:
         self.__logged_in = True
         self.update_token_html5lib(soup)
 
+        self.request_url.set("TOP", soup)
+
+        # トップページに移動（アンケートとかがある場合アンケート一覧が出るので）
+        soup = self.request("TOP", "headerForm", {
+            "rx.sync.source": "headerForm:logo",
+            "headerForm:logo": "",
+        })
+
         self.__nav_items = UnipaUtils.get_nav_items(soup)
+        self.__info_items = UnipaUtils.get_info_items(soup)
 
         self.request_url.set("TOP", soup)
         return True
@@ -225,6 +232,26 @@ class Unipa:
         }
         params.update(extra_params)
         return self.request("TOP", "menuForm", params)
+
+    def request_from_info(self,
+                          info_item: UnipaInfoItem) -> BeautifulSoup:
+        """
+        インフォメーションからリクエストを送信する
+
+        Args:
+            info_item: インフォメーションアイテム
+
+        Returns:
+            Response: レスポンス
+        """
+        if not self.__logged_in or self.request_url.get("TOP") is None or self.__token is None:
+            raise UnipaNotLoggedIn()
+
+        return self.request("TOP", "funcForm", {
+            "menuForm:mainMenu": "menuForm:mainMenu",
+            "rx.sync.source": info_item.menu_id,
+            info_item.menu_id: info_item.menu_id,
+        })
 
     def request(self,
                 request_target: str,
@@ -270,6 +297,9 @@ class Unipa:
         if url is None:
             raise UnipaInternalError("リクエストターゲットが見つかりません: " + request_target)
 
+        self.logger.debug("リクエストURL: %s", url)
+        self.logger.debug("リクエストデータ: %s", params)
+        self.logger.debug("リクエストヘッダー: %s", headers)
         self.__response = self.session.post(url, data=params, headers=headers)
 
         if self.__response.status_code != 200:
@@ -312,6 +342,15 @@ class Unipa:
             List[UnipaNavItem]: ナビゲーションアイテム
         """
         return self.__nav_items
+
+    def get_info_items(self) -> List[UnipaInfoItem]:
+        """
+        インフォメーションアイテムを返します。
+
+        Returns:
+            List[UnipaInfoItem]: インフォメーションアイテム
+        """
+        return self.__info_items
 
     def get_latest_response(self) -> Optional[Response]:
         """
