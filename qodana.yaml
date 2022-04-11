@@ -1,7 +1,3 @@
 version: "1.0"
 linter: jetbrains/qodana-python:2021.3-eap
 bootstrap: rm -rf .idea/misc.xml && python -m venv /data/cache/venv && /data/cache/venv/bin/pip install -r requirements.txt --quiet
-exclude:
-  - name: All
-    paths:
-      - venv
