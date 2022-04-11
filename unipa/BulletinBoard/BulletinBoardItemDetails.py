@@ -102,4 +102,8 @@ class UnipaBulletinBoardItemDetails:
         return self._publication_period
 
     def __str__(self) -> str:
-        return f"UnipaBulletinBoardItemDetails(title={self._title}, author={self._author}, category={self._category}, content_html={self._content_html}, publication_period={self._publication_period})"
+        return f"UnipaBulletinBoardItemDetails(title={self._title}, " \
+               f"author={self._author}, " \
+               f"category={self._category}, " \
+               f"content_html={self._content_html}, " \
+               f"publication_period={self._publication_period})"

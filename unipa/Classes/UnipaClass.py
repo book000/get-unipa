@@ -112,4 +112,7 @@ class UnipaClass:
         return self._lecture_at
 
     def __str__(self) -> str:
-        return f"UnipaClass(class_internal_id={self._class_internal_id}, name={self._name}, class_id={self._class_id}, lecture_at={self._lecture_at})"
+        return f"UnipaClass(class_internal_id={self._class_internal_id}, " \
+               f"name={self._name}, " \
+               f"class_id={self._class_id}, " \
+               f"lecture_at={self._lecture_at})"
