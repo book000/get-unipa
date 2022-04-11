@@ -63,7 +63,7 @@ class UnipaClass:
         Args:
             class_internal_id: クラス内部ID
             name: クラス名
-            class_id: クラスID (表示されている数値)
+            class_id: クラスID (表示されている値)
             lecture_at: 実施曜日・時限
         """
         self._class_internal_id = class_internal_id
@@ -94,10 +94,10 @@ class UnipaClass:
     @property
     def class_id(self) -> Optional[str]:
         """
-        クラスID (表示されている数値)
+        クラスID (表示されている値)
 
         Returns:
-            Optional[str]: クラスID (表示されている数値)
+            Optional[str]: クラスID (表示されている値)
         """
         return self._class_id
 
