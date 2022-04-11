@@ -1,3 +1,8 @@
+"""
+get-unipa エラーException群
+"""
+
+
 class UnipaInternalError(Exception):
     """
     処理に失敗した

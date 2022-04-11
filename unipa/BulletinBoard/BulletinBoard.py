@@ -218,4 +218,9 @@ class UnipaBulletinBoardItem:
         raise NotImplementedError("未実装です。")  # TODO
 
     def __str__(self) -> str:
-        return f"BulletinBoardItem(title={self.title}, target_s={self.target_s}, target_p={self.target_p}, is_attention={self.is_attention}, is_flag={self.is_flag}, is_unread={self.is_unread})"
+        return f"BulletinBoardItem(title={self.title}, " \
+               f"target_s={self.target_s}, " \
+               f"target_p={self.target_p}, " \
+               f"is_attention={self.is_attention}, " \
+               f"is_flag={self.is_flag}, " \
+               f"is_unread={self.is_unread})"
