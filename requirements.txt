@@ -4,3 +4,4 @@ html5lib==1.1
 mypy==0.942
 types-requests==2.27.15
 lxml==4.8.0
+dataclasses-json==0.5.7
