@@ -105,7 +105,8 @@ class Unipa:
         Unipa クラスを初期化します
 
         Args:
-            base_url: UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)
+            base_url: UNIVERSAL PASSPORT のベース URL
+                (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)
         """
         self.session: requests.Session = requests.Session()
         self.session.headers["User-Agent"] = "get-unipa (https://github.com/book000/get-unipa)"

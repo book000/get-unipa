@@ -9,7 +9,6 @@
     <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="ignoredErrors">
         <list>
-          <option value="E501" />
           <option value="E275" />
         </list>
       </option>
