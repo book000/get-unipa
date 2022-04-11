@@ -1,8 +1,8 @@
 {
   "languages": [
     "XML",
-    "Plain text",
     "Python",
+    "Plain text",
     ".gitignore (GitIgnore)"
   ]
 }

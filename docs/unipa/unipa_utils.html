@@ -64,6 +64,21 @@
 
             </li>
             <li>
+                    <a class="class" href="#UnipaInfoItem">UnipaInfoItem</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#UnipaInfoItem.__init__">UnipaInfoItem</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#UnipaInfoItem.name">name</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#UnipaInfoItem.menu_id">menu_id</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
                     <a class="class" href="#UnipaRequestUrl">UnipaRequestUrl</a>
                             <ul class="memberlist">
                         <li>
@@ -86,6 +101,9 @@
                         </li>
                         <li>
                                 <a class="function" href="#UnipaUtils.get_nav_items">get_nav_items</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#UnipaUtils.get_info_items">get_info_items</a>
                         </li>
                         <li>
                                 <a class="function" href="#UnipaUtils.get_menuid">get_menuid</a>
@@ -227,6 +245,48 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;UnipaNavItem(_menu=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_menu</span><span class="si">}</span><span class="s2">, _name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">, __menu_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_menu_id</span><span class="si">}</span><span class="s2">)&quot;</span>
 
 
+<span class="k">class</span> <span class="nc">UnipaInfoItem</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    トップインフォメーションアイテム</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        トップインフォメーションアイテム コンストラクタ</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: アイテム名</span>
+<span class="sd">            item_id: アイテム ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span> <span class="o">=</span> <span class="n">item_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        アイテム名</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: アイテム名</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">menu_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        アイテム ID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: アイテム ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;UnipaInfoItem(_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">, _item_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+
 <span class="k">class</span> <span class="nc">UnipaRequestUrl</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    リクエスト URL の列挙</span>
@@ -331,6 +391,41 @@
                         <span class="n">name</span><span class="o">=</span><span class="n">submenu_item</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;ui-menuitem-text&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
                         <span class="n">menu_id</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">get_menuid</span><span class="p">(</span><span class="n">pfconfirmcommand</span><span class="p">)</span>
                     <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">items</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_info_items</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                       <span class="n">soup</span><span class="p">:</span> <span class="n">BeautifulSoup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションアイテムを取得する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            soup: BeautifulSoup</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[UnipaInfoItem]: インフォメーションアイテム</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info_detail</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;#portalCont .infoDetail&quot;</span><span class="p">)</span>  <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">info_detail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ポータルコンテナ/インフォメーションが見つかりません&quot;</span><span class="p">)</span>
+
+        <span class="n">info_items</span> <span class="o">=</span> <span class="n">info_detail</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div.ui-panel-content&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">info_items</span><span class="p">))</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">info_item</span> <span class="ow">in</span> <span class="n">info_items</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">info_item</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;span&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">item_id</span> <span class="o">=</span> <span class="n">info_item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;a.ui-commandlink&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">item_id</span><span class="p">)</span>
+
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UnipaInfoItem</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">item_id</span><span class="o">=</span><span class="n">item_id</span>
+            <span class="p">))</span>
 
         <span class="k">return</span> <span class="n">items</span>
 
@@ -675,6 +770,139 @@
 
                             </div>
                 </section>
+                <section id="UnipaInfoItem">
+                                <div class="attr class">
+        <a class="headerlink" href="#UnipaInfoItem">#&nbsp;&nbsp</a>
+
+        
+        <span class="def">class</span>
+        <span class="name">UnipaInfoItem</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span><span class="k">class</span> <span class="nc">UnipaInfoItem</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    トップインフォメーションアイテム</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        トップインフォメーションアイテム コンストラクタ</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: アイテム名</span>
+<span class="sd">            item_id: アイテム ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span> <span class="o">=</span> <span class="n">item_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        アイテム名</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: アイテム名</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">menu_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        アイテム ID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: アイテム ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;UnipaInfoItem(_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">, _item_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span><span class="si">}</span><span class="s2">)&quot;</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>トップインフォメーションアイテム</p>
+</div>
+
+
+                            <div id="UnipaInfoItem.__init__" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#UnipaInfoItem.__init__">#&nbsp;&nbsp</a>
+
+        
+            <span class="name">UnipaInfoItem</span><span class="signature">(name: str, item_id: str)</span>
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        トップインフォメーションアイテム コンストラクタ</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: アイテム名</span>
+<span class="sd">            item_id: アイテム ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_id</span> <span class="o">=</span> <span class="n">item_id</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>トップインフォメーションアイテム コンストラクタ</p>
+
+<h6 id="args">Args</h6>
+
+<ul>
+<li><strong>name:</strong>  アイテム名</li>
+<li><strong>item_id:</strong>  アイテム ID</li>
+</ul>
+</div>
+
+
+                            </div>
+                            <div id="UnipaInfoItem.name" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#UnipaInfoItem.name">#&nbsp;&nbsp</a>
+
+        <span class="name">name</span><span class="annotation">: str</span>
+    </div>
+
+    
+            <div class="docstring"><p>アイテム名</p>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>str: アイテム名</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                            <div id="UnipaInfoItem.menu_id" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#UnipaInfoItem.menu_id">#&nbsp;&nbsp</a>
+
+        <span class="name">menu_id</span><span class="annotation">: str</span>
+    </div>
+
+    
+            <div class="docstring"><p>アイテム ID</p>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>str: アイテム ID</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                </section>
                 <section id="UnipaRequestUrl">
                                 <div class="attr class">
         <a class="headerlink" href="#UnipaRequestUrl">#&nbsp;&nbsp</a>
@@ -936,6 +1164,41 @@
 
         <span class="k">return</span> <span class="n">items</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_info_items</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                       <span class="n">soup</span><span class="p">:</span> <span class="n">BeautifulSoup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションアイテムを取得する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            soup: BeautifulSoup</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[UnipaInfoItem]: インフォメーションアイテム</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info_detail</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;#portalCont .infoDetail&quot;</span><span class="p">)</span>  <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">info_detail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ポータルコンテナ/インフォメーションが見つかりません&quot;</span><span class="p">)</span>
+
+        <span class="n">info_items</span> <span class="o">=</span> <span class="n">info_detail</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div.ui-panel-content&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">info_items</span><span class="p">))</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">info_item</span> <span class="ow">in</span> <span class="n">info_items</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">info_item</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;span&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">item_id</span> <span class="o">=</span> <span class="n">info_item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;a.ui-commandlink&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">item_id</span><span class="p">)</span>
+
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UnipaInfoItem</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">item_id</span><span class="o">=</span><span class="n">item_id</span>
+            <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">items</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_menuid</span><span class="p">(</span><span class="n">pfconfirmcommand</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1064,6 +1327,75 @@
 
 <blockquote>
   <p>List[UnipaNavItem]: ナビゲーションアイテム</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                            <div id="UnipaUtils.get_info_items" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#UnipaUtils.get_info_items">#&nbsp;&nbsp</a>
+
+                <div class="decorator">@classmethod</div>
+
+            <span class="def">def</span>
+            <span class="name">get_info_items</span><span class="signature">(
+    cls,
+    soup: bs4.BeautifulSoup
+) -&gt; List[<a href="#UnipaInfoItem">unipa.unipa_utils.UnipaInfoItem</a>]</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_info_items</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                       <span class="n">soup</span><span class="p">:</span> <span class="n">BeautifulSoup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションアイテムを取得する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            soup: BeautifulSoup</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[UnipaInfoItem]: インフォメーションアイテム</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info_detail</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;#portalCont .infoDetail&quot;</span><span class="p">)</span>  <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">info_detail</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ポータルコンテナ/インフォメーションが見つかりません&quot;</span><span class="p">)</span>
+
+        <span class="n">info_items</span> <span class="o">=</span> <span class="n">info_detail</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div.ui-panel-content&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">info_items</span><span class="p">))</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">info_item</span> <span class="ow">in</span> <span class="n">info_items</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">info_item</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;span&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">item_id</span> <span class="o">=</span> <span class="n">info_item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;a.ui-commandlink&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">item_id</span><span class="p">)</span>
+
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UnipaInfoItem</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">item_id</span><span class="o">=</span><span class="n">item_id</span>
+            <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">items</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>インフォメーションアイテムを取得する</p>
+
+<h6 id="args">Args</h6>
+
+<ul>
+<li><strong>soup:</strong>  BeautifulSoup</li>
+</ul>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>List[UnipaInfoItem]: インフォメーションアイテム</p>
 </blockquote>
 </div>
 

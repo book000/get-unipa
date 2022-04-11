@@ -25,8 +25,10 @@
         <h2>Submodules</h2>
         <ul>
                 <li><a href="unipa/BulletinBoard.html">unipa.BulletinBoard</a></li>
+                <li><a href="unipa/Classes.html">unipa.Classes</a></li>
                 <li><a href="unipa/errors.html">unipa.errors</a></li>
                 <li><a href="unipa/models.html">unipa.models</a></li>
+                <li><a href="unipa/test_login.html">unipa.test_login</a></li>
                 <li><a href="unipa/unipa_utils.html">unipa.unipa_utils</a></li>
         </ul>
 
@@ -69,6 +71,9 @@
                                 <a class="function" href="#Unipa.request_from_menu">request_from_menu</a>
                         </li>
                         <li>
+                                <a class="function" href="#Unipa.request_from_info">request_from_info</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#Unipa.request">request</a>
                         </li>
                         <li>
@@ -79,6 +84,9 @@
                         </li>
                         <li>
                                 <a class="function" href="#Unipa.get_nav_items">get_nav_items</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Unipa.get_info_items">get_info_items</a>
                         </li>
                         <li>
                                 <a class="function" href="#Unipa.get_latest_response">get_latest_response</a>
@@ -127,7 +135,7 @@ unipa    </h1>
 <span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span>
 
 <span class="kn">from</span> <span class="nn">unipa.errors</span> <span class="kn">import</span> <span class="n">UnipaInternalError</span><span class="p">,</span> <span class="n">UnipaLoginError</span><span class="p">,</span> <span class="n">UnipaNotLoggedIn</span>
-<span class="kn">from</span> <span class="nn">unipa.unipa_utils</span> <span class="kn">import</span> <span class="n">UnipaNavItem</span><span class="p">,</span> <span class="n">UnipaRequestUrl</span><span class="p">,</span> <span class="n">UnipaUtils</span>
+<span class="kn">from</span> <span class="nn">unipa.unipa_utils</span> <span class="kn">import</span> <span class="n">UnipaInfoItem</span><span class="p">,</span> <span class="n">UnipaNavItem</span><span class="p">,</span> <span class="n">UnipaRequestUrl</span><span class="p">,</span> <span class="n">UnipaUtils</span>
 
 
 <span class="k">class</span> <span class="nc">UnipaToken</span><span class="p">:</span>
@@ -219,7 +227,8 @@ unipa    </h1>
 <span class="sd">        Unipa クラスを初期化します</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            base_url: UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</span>
+<span class="sd">            base_url: UNIVERSAL PASSPORT のベース URL</span>
+<span class="sd">                (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;get-unipa (https://github.com/book000/get-unipa)&quot;</span>
@@ -230,6 +239,7 @@ unipa    </h1>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnipaToken</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaNavItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="p">:</span> <span class="n">UnipaRequestUrl</span> <span class="o">=</span> <span class="n">UnipaRequestUrl</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
 
@@ -250,9 +260,6 @@ unipa    </h1>
         <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインページの取得に失敗しました。&quot;</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
         <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
         <span class="n">login_form</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loginForm&quot;</span><span class="p">})</span>
@@ -308,7 +315,16 @@ unipa    </h1>
         <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_token_html5lib</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">soup</span><span class="p">)</span>
+
+        <span class="c1"># トップページに移動（アンケートとかがある場合アンケート一覧が出るので）</span>
+        <span class="n">soup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;headerForm&quot;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;rx.sync.source&quot;</span><span class="p">:</span> <span class="s2">&quot;headerForm:logo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;headerForm:logo&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span> <span class="o">=</span> <span class="n">UnipaUtils</span><span class="o">.</span><span class="n">get_nav_items</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span> <span class="o">=</span> <span class="n">UnipaUtils</span><span class="o">.</span><span class="n">get_info_items</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">soup</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -339,6 +355,26 @@ unipa    </h1>
         <span class="p">}</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra_params</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;menuForm&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">request_from_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">info_item</span><span class="p">:</span> <span class="n">UnipaInfoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeautifulSoup</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションからリクエストを送信する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info_item: インフォメーションアイテム</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: レスポンス</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaNotLoggedIn</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;funcForm&quot;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;menuForm:mainMenu&quot;</span><span class="p">:</span> <span class="s2">&quot;menuForm:mainMenu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rx.sync.source&quot;</span><span class="p">:</span> <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">,</span>
+            <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">:</span> <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">,</span>
+        <span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">request_target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -384,6 +420,9 @@ unipa    </h1>
         <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;リクエストターゲットが見つかりません: &quot;</span> <span class="o">+</span> <span class="n">request_target</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストURL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストデータ: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストヘッダー: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
@@ -426,6 +465,15 @@ unipa    </h1>
 <span class="sd">            List[UnipaNavItem]: ナビゲーションアイテム</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span>
+
+    <span class="k">def</span> <span class="nf">get_info_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションアイテムを返します。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[UnipaInfoItem]: インフォメーションアイテム</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span>
 
     <span class="k">def</span> <span class="nf">get_latest_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -720,7 +768,8 @@ unipa    </h1>
 <span class="sd">        Unipa クラスを初期化します</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            base_url: UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</span>
+<span class="sd">            base_url: UNIVERSAL PASSPORT のベース URL</span>
+<span class="sd">                (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;get-unipa (https://github.com/book000/get-unipa)&quot;</span>
@@ -731,6 +780,7 @@ unipa    </h1>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnipaToken</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaNavItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="p">:</span> <span class="n">UnipaRequestUrl</span> <span class="o">=</span> <span class="n">UnipaRequestUrl</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
 
@@ -751,9 +801,6 @@ unipa    </h1>
         <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインページの取得に失敗しました。&quot;</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
         <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
         <span class="n">login_form</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loginForm&quot;</span><span class="p">})</span>
@@ -809,7 +856,16 @@ unipa    </h1>
         <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_token_html5lib</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">soup</span><span class="p">)</span>
+
+        <span class="c1"># トップページに移動（アンケートとかがある場合アンケート一覧が出るので）</span>
+        <span class="n">soup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;headerForm&quot;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;rx.sync.source&quot;</span><span class="p">:</span> <span class="s2">&quot;headerForm:logo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;headerForm:logo&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span> <span class="o">=</span> <span class="n">UnipaUtils</span><span class="o">.</span><span class="n">get_nav_items</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span> <span class="o">=</span> <span class="n">UnipaUtils</span><span class="o">.</span><span class="n">get_info_items</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">soup</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -840,6 +896,26 @@ unipa    </h1>
         <span class="p">}</span>
         <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra_params</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;menuForm&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">request_from_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">info_item</span><span class="p">:</span> <span class="n">UnipaInfoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeautifulSoup</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションからリクエストを送信する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info_item: インフォメーションアイテム</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: レスポンス</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaNotLoggedIn</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;funcForm&quot;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;menuForm:mainMenu&quot;</span><span class="p">:</span> <span class="s2">&quot;menuForm:mainMenu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rx.sync.source&quot;</span><span class="p">:</span> <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">,</span>
+            <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">:</span> <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">,</span>
+        <span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">request_target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -885,6 +961,9 @@ unipa    </h1>
         <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;リクエストターゲットが見つかりません: &quot;</span> <span class="o">+</span> <span class="n">request_target</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストURL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストデータ: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストヘッダー: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
@@ -927,6 +1006,15 @@ unipa    </h1>
 <span class="sd">            List[UnipaNavItem]: ナビゲーションアイテム</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span>
+
+    <span class="k">def</span> <span class="nf">get_info_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションアイテムを返します。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[UnipaInfoItem]: インフォメーションアイテム</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span>
 
     <span class="k">def</span> <span class="nf">get_latest_response</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -976,7 +1064,8 @@ unipa    </h1>
 <span class="sd">        Unipa クラスを初期化します</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            base_url: UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</span>
+<span class="sd">            base_url: UNIVERSAL PASSPORT のベース URL</span>
+<span class="sd">                (ログインページ URL にて、 `/up/` より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;get-unipa (https://github.com/book000/get-unipa)&quot;</span>
@@ -987,6 +1076,7 @@ unipa    </h1>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnipaToken</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaNavItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="p">:</span> <span class="n">UnipaRequestUrl</span> <span class="o">=</span> <span class="n">UnipaRequestUrl</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
 </pre></div>
@@ -998,7 +1088,8 @@ unipa    </h1>
 <h6 id="args">Args</h6>
 
 <ul>
-<li><strong>base_url:</strong>  UNIVERSAL PASSPORT のベース URL (ログインページ URL にて、 <code>/up/</code> より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</li>
+<li><strong>base_url:</strong>  UNIVERSAL PASSPORT のベース URL
+(ログインページ URL にて、 <code>/up/</code> より前の URL を指定します。例: https://unipa.itp.kindai.ac.jp/)</li>
 </ul>
 </div>
 
@@ -1031,9 +1122,6 @@ unipa    </h1>
         <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__base_url</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;ログインページの取得に失敗しました。&quot;</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hoge.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
         <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html5lib&quot;</span><span class="p">)</span>
         <span class="n">login_form</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loginForm&quot;</span><span class="p">})</span>
@@ -1089,7 +1177,16 @@ unipa    </h1>
         <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_token_html5lib</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">soup</span><span class="p">)</span>
+
+        <span class="c1"># トップページに移動（アンケートとかがある場合アンケート一覧が出るので）</span>
+        <span class="n">soup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;headerForm&quot;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;rx.sync.source&quot;</span><span class="p">:</span> <span class="s2">&quot;headerForm:logo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;headerForm:logo&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">})</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__nav_items</span> <span class="o">=</span> <span class="n">UnipaUtils</span><span class="o">.</span><span class="n">get_nav_items</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span> <span class="o">=</span> <span class="n">UnipaUtils</span><span class="o">.</span><span class="n">get_info_items</span><span class="p">(</span><span class="n">soup</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">soup</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -1177,6 +1274,59 @@ unipa    </h1>
 
 
                             </div>
+                            <div id="Unipa.request_from_info" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#Unipa.request_from_info">#&nbsp;&nbsp</a>
+
+        
+            <span class="def">def</span>
+            <span class="name">request_from_info</span><span class="signature">(
+    self,
+    info_item: <a href="unipa/unipa_utils.html#UnipaInfoItem">unipa.unipa_utils.UnipaInfoItem</a>
+) -&gt; bs4.BeautifulSoup</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">request_from_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">info_item</span><span class="p">:</span> <span class="n">UnipaInfoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeautifulSoup</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションからリクエストを送信する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            info_item: インフォメーションアイテム</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: レスポンス</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logged_in</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_url</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnipaNotLoggedIn</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="s2">&quot;funcForm&quot;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s2">&quot;menuForm:mainMenu&quot;</span><span class="p">:</span> <span class="s2">&quot;menuForm:mainMenu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rx.sync.source&quot;</span><span class="p">:</span> <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">,</span>
+            <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">:</span> <span class="n">info_item</span><span class="o">.</span><span class="n">menu_id</span><span class="p">,</span>
+        <span class="p">})</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>インフォメーションからリクエストを送信する</p>
+
+<h6 id="args">Args</h6>
+
+<ul>
+<li><strong>info_item:</strong>  インフォメーションアイテム</li>
+</ul>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>Response: レスポンス</p>
+</blockquote>
+</div>
+
+
+                            </div>
                             <div id="Unipa.request" class="classattr">
                                         <div class="attr function"><a class="headerlink" href="#Unipa.request">#&nbsp;&nbsp</a>
 
@@ -1237,6 +1387,9 @@ unipa    </h1>
         <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnipaInternalError</span><span class="p">(</span><span class="s2">&quot;リクエストターゲットが見つかりません: &quot;</span> <span class="o">+</span> <span class="n">request_target</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストURL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストデータ: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;リクエストヘッダー: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
@@ -1370,6 +1523,39 @@ unipa    </h1>
 
 <blockquote>
   <p>List[UnipaNavItem]: ナビゲーションアイテム</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                            <div id="Unipa.get_info_items" class="classattr">
+                                        <div class="attr function"><a class="headerlink" href="#Unipa.get_info_items">#&nbsp;&nbsp</a>
+
+        
+            <span class="def">def</span>
+            <span class="name">get_info_items</span><span class="signature">(self) -&gt; List[<a href="unipa/unipa_utils.html#UnipaInfoItem">unipa.unipa_utils.UnipaInfoItem</a>]</span>:
+    </div>
+
+            <details>
+            <summary>View Source</summary>
+            <div class="pdoc-code codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">get_info_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UnipaInfoItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        インフォメーションアイテムを返します。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[UnipaInfoItem]: インフォメーションアイテム</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__info_items</span>
+</pre></div>
+
+        </details>
+
+            <div class="docstring"><p>インフォメーションアイテムを返します。</p>
+
+<h6 id="returns">Returns</h6>
+
+<blockquote>
+  <p>List[UnipaInfoItem]: インフォメーションアイテム</p>
 </blockquote>
 </div>
 
