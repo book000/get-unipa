@@ -4,7 +4,7 @@
 import datetime
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from unipa import Unipa
 from unipa.BulletinBoard import UnipaBulletinBoard, UnipaBulletinBoardItem
@@ -100,10 +100,12 @@ class GenerateTestData:
 
     @classmethod
     def datetime2str(cls,
-                     dt: datetime.datetime) -> str:
+                     dt: Optional[datetime.datetime]) -> Optional[str]:
         """
         datetime を str に変換
         """
+        if dt is None:
+            return None
         day_of_week = '月火水木金土日'
         return dt.strftime("%Y/%m/%d(DAYOFWEEK) %H:%M").replace("DAYOFWEEK", day_of_week[dt.weekday()])
 
