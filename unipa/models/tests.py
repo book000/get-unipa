@@ -3,7 +3,7 @@
 """
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from dataclasses_json import dataclass_json
 
@@ -45,8 +45,8 @@ class PublicationPeriodModel:
     """
     公開期間モデル
     """
-    start_date: str
-    end_date: str
+    start_date: Optional[str]
+    end_date: Optional[str]
 
 
 @dataclass_json

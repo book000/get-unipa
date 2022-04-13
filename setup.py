@@ -1,9 +1,14 @@
+"""
+setup.py
+"""
+import os
+
 import setuptools
 
 setuptools.setup(
     name='get-unipa',
-    version=open("get-unipa.version").read().strip(),
-    packages=setuptools.find_packages(),
+    version=open("get-unipa.version").read().strip() if os.path.exists("get-unipa.version") else "0.0.0",
+    packages=setuptools.find_packages(exclude=['examples']),
     install_requires=["beautifulsoup4", "requests", "html5lib"],
     url='https://github.com/book000/get-unipa',
     license='MIT',
