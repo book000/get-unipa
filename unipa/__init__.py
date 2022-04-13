@@ -269,7 +269,7 @@ class Unipa:
             response_markup: レスポンスのマークアップ
 
         Returns:
-            Response: レスポンス
+            BeautifulSoup: レスポンスのBeautifulSoupオブジェクト
         """
         if not self.__logged_in or self.request_url.get("TOP") is None or self.__token is None:
             raise UnipaNotLoggedIn()
@@ -287,7 +287,7 @@ class Unipa:
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
-        if response_markup == "lxml":
+        if response_markup == "html5lib":
             headers["Accept"] = "text/html"
         if response_markup == "lxml":
             headers["Accept"] = "application/xml,text/xml"
@@ -316,6 +316,54 @@ class Unipa:
         # xmlのときに更新するかは検討
 
         return soup
+
+    def download(self,
+                 request_target: str,
+                 request_type: str,
+                 extra_params: dict[str, str],
+                 path: str) -> None:
+        """
+        リクエストを行い、ファイルをダウンロードする
+
+        Args:
+            request_target: リクエストターゲット
+            request_type: リクエストタイプ (menuForm, funcForm など)
+            extra_params: リクエストに付加するパラメータ (トークンなど以外)
+            path: ダウンロード先のパス
+        """
+        if not self.__logged_in or self.request_url.get("TOP") is None or self.__token is None:
+            raise UnipaNotLoggedIn()
+
+        params = {
+            "rx-token": self.__token.rx_token,
+            "rx-loginKey": self.__token.rx_login_key,
+            "rx-deviceKbn": self.__token.rx_device_kbn,
+            "rx-loginType": self.__token.rx_login_type,
+            "javax.faces.ViewState": self.__token.javax_view_state,
+            request_type: request_type
+        }
+        params.update(extra_params)
+
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+
+        url = self.request_url.get(request_target)
+        if url is None:
+            raise UnipaInternalError("リクエストターゲットが見つかりません: " + request_target)
+
+        self.logger.debug("リクエストURL: %s", url)
+        self.logger.debug("リクエストデータ: %s", params)
+        self.logger.debug("リクエストヘッダー: %s", headers)
+        self.__response = self.session.post(url, data=params, headers=headers, stream=True)
+
+        if self.__response.status_code != 200:
+            self.logger.debug("レスポンス: %s", self.__response.text)
+            raise UnipaInternalError("リクエストに失敗しました。(" + str(self.__response.status_code) + ")")
+
+        with open(path, 'wb') as f:
+            for chunk in self.__response.iter_content(chunk_size=8192):
+                f.write(chunk)
 
     def is_logged_in(self) -> bool:
         """

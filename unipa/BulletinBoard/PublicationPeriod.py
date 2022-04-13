@@ -42,3 +42,6 @@ class UnipaPublicationPeriod:
             Optional[datetime.datetime]: 公開終了日
         """
         return self._end_date
+
+    def __str__(self) -> str:
+        return f"UnipaPublicationPeriod(start_date={self.start_date}, end_date={self.end_date})"
