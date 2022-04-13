@@ -176,7 +176,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 
@@ -218,8 +218,8 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    公開期間モデル</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
 
 <span class="nd">@dataclass_json</span>
@@ -777,8 +777,8 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    公開期間モデル</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">end_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </pre></div>
 
         </details>
@@ -791,7 +791,7 @@
                                         <div class="attr function"><a class="headerlink" href="#PublicationPeriodModel.__init__">#&nbsp;&nbsp</a>
 
         
-            <span class="name">PublicationPeriodModel</span><span class="signature">(start_date: str, end_date: str)</span>
+            <span class="name">PublicationPeriodModel</span><span class="signature">(start_date: Optional[str], end_date: Optional[str])</span>
     </div>
 
     
