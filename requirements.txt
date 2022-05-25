@@ -1,7 +1,7 @@
 requests==2.27.1
 beautifulsoup4==4.10.0
 html5lib==1.1
-mypy==0.950
+mypy==0.960
 types-requests==2.27.15
 lxml==4.8.0
 dataclasses-json==0.5.7
