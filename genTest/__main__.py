@@ -2,8 +2,11 @@
 テストデータ作成
 """
 import datetime
+import hashlib
 import logging
 import os
+import random
+import tempfile
 from typing import List, Optional
 
 from unipa import Unipa
@@ -59,7 +62,9 @@ class GenerateTestData:
         """
         ret = []
 
-        for item in bulletinboard_items:
+        for x in range(5):
+            item = random.choice(bulletinboard_items)
+
             ret.append(BulletinBoardGetAllModel(
                 item_id=item.item_id,
                 title=item.title,
@@ -82,8 +87,19 @@ class GenerateTestData:
         """
         ret = []
 
-        for item in bulletinboard_items:
+        for x in range(5):
+            item = random.choice(bulletinboard_items)
             details = item.get_details(self.unipa)
+
+            file_hashs = []
+            with tempfile.TemporaryDirectory() as temppath:
+                for file in details.files:
+                    path = temppath + "/" + file.filename
+                    file.download(self.unipa, path)
+
+                    with open(path, "rb") as f:
+                        file_hashs.append(hashlib.sha256(f.read()).hexdigest())
+
             ret.append(BulletinBoardGetDetailsModel(
                 item_id=item.item_id,
                 title=details.title,
@@ -94,6 +110,7 @@ class GenerateTestData:
                     start_date=self.datetime2str(details.publication_period.start_date),
                     end_date=self.datetime2str(details.publication_period.end_date),
                 ),
+                file_hashs=file_hashs,
             ))
 
         return ret

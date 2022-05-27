@@ -62,6 +62,7 @@ class BulletinBoardGetDetailsModel:
     category: str
     content_html: str
     publication_period: PublicationPeriodModel
+    file_hashs: List[str]
 
 
 @dataclass_json

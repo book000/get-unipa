@@ -1,6 +1,9 @@
 """
 掲示板の掲示アイテム 詳細情報
 """
+from typing import List
+
+from unipa.BulletinBoard.BulletinBoardFile import UnipaBulletinBoardFile
 from unipa.BulletinBoard.PublicationPeriod import UnipaPublicationPeriod
 
 
@@ -18,7 +21,8 @@ class UnipaBulletinBoardItemDetails:
                  author: str,
                  category: str,
                  content_html: str,
-                 publication_period: UnipaPublicationPeriod):
+                 publication_period: UnipaPublicationPeriod,
+                 files: List[UnipaBulletinBoardFile]):
         """
         コンストラクタ
 
@@ -29,6 +33,7 @@ class UnipaBulletinBoardItemDetails:
             category: カテゴリ
             content_html: コンテンツ HTML
             publication_period: 公開期間
+            files: 添付ファイル
         """
         self._item_id = item_id
         self._title = title
@@ -36,6 +41,7 @@ class UnipaBulletinBoardItemDetails:
         self._category = category
         self._content_html = content_html
         self._publication_period = publication_period
+        self._files = files
 
     @property
     def item_id(self) -> str:
@@ -101,9 +107,20 @@ class UnipaBulletinBoardItemDetails:
         """
         return self._publication_period
 
+    @property
+    def files(self) -> List[UnipaBulletinBoardFile]:
+        """
+        添付ファイル
+
+        Returns:
+            List[UnipaBulletinBoardFile]: 添付ファイル
+        """
+        return self._files
+
     def __str__(self) -> str:
         return f"UnipaBulletinBoardItemDetails(title={self._title}, " \
                f"author={self._author}, " \
                f"category={self._category}, " \
                f"content_html={self._content_html}, " \
-               f"publication_period={self._publication_period})"
+               f"publication_period={self._publication_period}), " \
+               f"files={self._files}"
