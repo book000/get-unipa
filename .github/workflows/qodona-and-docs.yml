@@ -22,7 +22,7 @@ jobs:
           python-version: '3.10'
 
       - name: Qodana Scan
-        uses: JetBrains/qodana-action@v5.0.2
+        uses: JetBrains/qodana-action@v5.1.0
         with:
           args: "--fail-threshold,1"
           use-caches: false
