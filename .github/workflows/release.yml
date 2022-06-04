@@ -72,7 +72,7 @@ jobs:
           prerelease: ${{ (github.ref != 'refs/heads/master' && 'true') || 'false' }}
 
       - name: Upload Release Asset
-        uses: shogo82148/actions-upload-release-asset@v1.6.1
+        uses: shogo82148/actions-upload-release-asset@v1.6.2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/*.gz
